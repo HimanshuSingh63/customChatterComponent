@@ -1,4 +1,4 @@
-import { LightningElement,track } from 'lwc';
+import { LightningElement,track,api } from 'lwc';
 
 export default class PostComponent extends LightningElement {
    
@@ -13,11 +13,8 @@ export default class PostComponent extends LightningElement {
             ?.trim(); // Remove leading/trailing whitespace
         return !plainText;
     }
-    handleInputClick() {
+    @api handleInputClick() {
         this.showRichText = true;
-    }
-    handleBlur() {
-        this.showRichText = false;
     }
     handleChange(e){
         this.richTextValue = e.target.value;
@@ -46,6 +43,7 @@ export default class PostComponent extends LightningElement {
     }
     handleClose(){
         this.showRichText = false;
+        this.dispatchEvent(new CustomEvent('close'));
     }
     
 }

@@ -1,0 +1,95 @@
+<template>
+    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-vertical_x-small">
+        <div class="slds-col">
+            <lightning-button-icon 
+                icon-name="utility:filter"  
+                alternative-text="Filter" 
+                title="Filter">
+            </lightning-button-icon>
+        </div>
+        <div class="slds-col">
+            <div class="slds-grid slds-grid_vertical-align-center">
+                <div class="slds-col slds-m-horizontal_small">
+                    <lightning-input
+                        name="enter-search"
+                        type="search"
+                        variant="label-hidden"
+                    ></lightning-input>
+                </div>
+                <div class="slds-col">
+                    <lightning-button-icon 
+                        icon-name="utility:refresh"  
+                        alternative-text="Refresh" 
+                        title="Refresh">
+                    </lightning-button-icon>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <div class="slds-feed">
+        <ul class="slds-feed__list">
+          <li class="slds-feed__item">
+            <div class="slds-grid slds-grid_align-spread">
+                <div class="slds-col">
+                    <lightning-layout>
+                        <lightning-layout-item size="2">
+                            <span class="slds-avatar slds-avatar_profile-image-large slds-avatar_circle"></span>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="10">
+                            <span class="slds-m-horizontal_small slds-is-relative" style="display: inline-block;">
+                                <div>Nikhil Gautam</div>
+                                <div class="slds-text-body_small slds-text-color_weak">1h ago</div>
+                            </span>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+                <div class="slds-col" >
+                    <lightning-button-menu alternative-text="Action menu" menu-alignment="right">
+                        <lightning-menu-item value="Edit" label="Edit"></lightning-menu-item>
+                        <lightning-menu-item value="Delete" label="Delete"></lightning-menu-item>
+                        <lightning-menu-item value="Bookmark" label="Bookmark"></lightning-menu-item>
+                    </lightning-button-menu>
+                </div>
+            </div>
+            <div class="slds-text-longform">
+                <p>Hey there! Here&#x27;s the latest demo presentation
+                  <a href="#" title="Jenna Davis"> @Jenna Davis</a>, let me know if there are any changes. I&#x27;ve updated slides 3-8 and slides 16-18 slides with new product shots.</p>
+            </div>
+            <hr>
+            <lightning-layout vertical-align="stretch" multiple-rows="true" >
+                <lightning-layout-item flexibility="auto">
+                    <lightning-button-stateful
+                    label-when-off="Like"
+                    label-when-on="Liked"
+                    icon-name-when-off="utility:like"
+                    icon-name-when-on="utility:like"
+                    variant="text"
+                    selected={isSelected}
+                    onclick={handleClick}>
+                </lightning-button-stateful>
+                </lightning-layout-item>
+                    <lightning-layout-item flexibility="auto">
+                        <lightning-button-icon 
+                        icon-name="utility:comments"  
+                        variant="neutral" 
+                        alternative-text="comments"
+                        size='medium'>
+                    </lightning-button-icon>
+                </lightning-layout-item>
+            </lightning-layout>
+            <div class="slds-feed__item-comments">
+                <lightning-layout >
+                    <lightning-layout-item size="1" padding="around-small">
+                        <span class="slds-avatar slds-avatar_profile-image-small slds-avatar_circle"></span>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="11" padding="around-small" >
+                        <c-post-component></c-post-component>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </div>
+          </li>
+         
+        </ul> 
+    </div> 
+</template>

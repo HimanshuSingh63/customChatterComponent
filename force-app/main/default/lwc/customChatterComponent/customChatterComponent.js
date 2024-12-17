@@ -1,10 +1,13 @@
 import { LightningElement,track } from 'lwc';
 export default class CustomChatterComponent extends LightningElement {
-    isSelected = false;
     @track inputValue = '';
-
-    handleClick() {
-        this.isSelected = !this.isSelected;
+    @track showRichText = false;
+    openRichText(){
+        this.template.querySelector('c-post-component').handleInputClick();
+        this.showRichText = true;
+        
     }
-
+    closeRichText(){
+        this.showRichText = false;
+    }
 }
