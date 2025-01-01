@@ -1,5 +1,5 @@
 import { LightningElement,track,api } from 'lwc';
-
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 export default class PostComponent extends LightningElement {
    
     @track showRichText = false;
@@ -37,13 +37,21 @@ export default class PostComponent extends LightningElement {
         
     }
     handleShare(){
-
         console.log('share clicled');
-        
+        this.showToast();
+        this.handleClose();
     }
     handleClose(){
         this.showRichText = false;
-        this.dispatchEvent(new CustomEvent('close'));
     }
     
+    showToast() {
+        const event = new ShowToastEvent({
+            title: 'Seccussful!',
+            variant: 'success',
+            mode: 'dismissable',
+            message:'Post shared successfully'
+        });
+        this.dispatchEvent(event);
+    }
 }

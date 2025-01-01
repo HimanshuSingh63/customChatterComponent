@@ -3,31 +3,13 @@
         <div class="slds-m-around_medium chatterHeader">
             <lightning-tabset variant="scoped ">
                 <lightning-tab label="Post">
-                    <template if:false={showRichText}>
-                        <div class="slds-grid">
-                            <div class="slds-col">
-                                <c-post-component></c-post-component>
-                            </div>
-                            <div class="slds-col">
-                                <lightning-button 
-                                    label="Share" 
-                                    title="Primary action" 
-                                    onclick={openRichText}
-                                ></lightning-button>  
-                            </div>
-                        </div>
-                    </template>
-                    <template if:true={showRichText}>
-                        <c-post-component onclose={closeRichText}></c-post-component>
-                    </template>
-                    
-                    
+                    <c-post-component onclose={closeRichText}></c-post-component>
                 </lightning-tab>
                 <lightning-tab label="Poll">
-                    Two Content !
+                    <c-poll-component></c-poll-component>
                 </lightning-tab>
                 <lightning-tab label="Question">
-                    Three Content !
+                    <c-question-component></c-question-component>
                 </lightning-tab>
             </lightning-tabset>
         </div>

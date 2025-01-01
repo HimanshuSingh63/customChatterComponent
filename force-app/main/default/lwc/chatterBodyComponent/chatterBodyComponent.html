@@ -1,19 +1,19 @@
 <template>
     <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-vertical_x-small">
-        <div class="slds-col">
-            <lightning-button-icon 
-                icon-name="utility:filter"  
-                alternative-text="Filter" 
-                title="Filter">
-            </lightning-button-icon>
+        <div class="slds-col ">
+            <lightning-button-menu alternative-text="filters" icon-name="utility:filter" class="">
+                <lightning-menu-item value="MenuItemOne" label="Menu Item One"></lightning-menu-item>
+                <lightning-menu-item value="MenuItemTwo" label="Menu Item Two"></lightning-menu-item>
+            </lightning-button-menu>
         </div>
         <div class="slds-col">
             <div class="slds-grid slds-grid_vertical-align-center">
-                <div class="slds-col slds-m-horizontal_small">
+                <div class="slds-col slds-m-horizontal_small ">
                     <lightning-input
                         name="enter-search"
                         type="search"
                         variant="label-hidden"
+                        placeholder="Search"
                     ></lightning-input>
                 </div>
                 <div class="slds-col">
@@ -34,15 +34,35 @@
                 <div class="slds-col">
                     <lightning-layout>
                         <lightning-layout-item size="2">
-                            <span class="slds-avatar slds-avatar_profile-image-large slds-avatar_circle"></span>
+                            <span class="slds-avatar slds-avatar_profile-image-large slds-avatar_circle" onmouseover={handlePopOver}></span>
                         </lightning-layout-item>
                         <lightning-layout-item size="10">
                             <span class="slds-m-horizontal_small slds-is-relative" style="display: inline-block;">
-                                <div>Nikhil Gautam</div>
+                                <div onmouseover={handlePopOver} >Nikhil Gautam</div>
                                 <div class="slds-text-body_small slds-text-color_weak">1h ago</div>
                             </span>
                         </lightning-layout-item>
                     </lightning-layout>
+                    <template if:true={popOverVisible}>
+                        <section aria-label="Dialog title" 
+                                 aria-describedby="popover-body-id" 
+                                 class="slds-popover slds-nubbin_right" 
+                                 role="dialog" 
+                                 style="position: absolute; top: -10px; right: 105%; z-index: 9999; width: 320px;">
+                            <lightning-button-icon 
+                                icon-name="utility:close" 
+                                variant="bare" 
+                                size="small" 
+                                class="slds-float_right slds-popover__close" 
+                                alternative-text="Close dialog"
+                                title="Close dialog"
+                                onclick={handlePopOver}>
+                            </lightning-button-icon>
+                            <div id="popover-body-id" class="slds-popover__body">
+                                <p>Hey there! Here's the latest demo. let me know if there are any changes.</p>
+                            </div>
+                        </section>
+                    </template>
                 </div>
                 <div class="slds-col" >
                     <lightning-button-menu alternative-text="Action menu" menu-alignment="right">
@@ -56,7 +76,7 @@
                 <p>Hey there! Here&#x27;s the latest demo presentation
                   <a href="#" title="Jenna Davis"> @Jenna Davis</a>, let me know if there are any changes. I&#x27;ve updated slides 3-8 and slides 16-18 slides with new product shots.</p>
             </div>
-            <hr>
+            
             <lightning-layout vertical-align="stretch" multiple-rows="true" >
                 <lightning-layout-item flexibility="auto">
                     <lightning-button-stateful
@@ -92,4 +112,5 @@
          
         </ul> 
     </div> 
+    
 </template>
