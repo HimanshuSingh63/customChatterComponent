@@ -1,0 +1,11 @@
+.bodyHeader{
+    background-color: #f3f3f3;
+    border-radius: 20px;
+}
+.circleButton {
+    --slds-c-button-radius-border: 50%;
+}
+.circleInput{
+    --slds-c-input-radius-border: 1rem;
+
+}

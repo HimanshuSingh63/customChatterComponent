@@ -1,7 +1,7 @@
 <template>
-    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-vertical_x-small">
+    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-p-around_x-small bodyHeader">
         <div class="slds-col ">
-            <lightning-button-menu alternative-text="filters" icon-name="utility:filter" class="">
+            <lightning-button-menu alternative-text="filters" variant="brand-outline" class="circleButton">
                 <lightning-menu-item value="MenuItemOne" label="Menu Item One"></lightning-menu-item>
                 <lightning-menu-item value="MenuItemTwo" label="Menu Item Two"></lightning-menu-item>
             </lightning-button-menu>
@@ -14,13 +14,17 @@
                         type="search"
                         variant="label-hidden"
                         placeholder="Search"
+                        class="circleInput"
                     ></lightning-input>
                 </div>
                 <div class="slds-col">
                     <lightning-button-icon 
                         icon-name="utility:refresh"  
                         alternative-text="Refresh" 
-                        title="Refresh">
+                        title="Refresh"
+                        variant="brand-outline"
+                        class="circleButton"
+                        >
                     </lightning-button-icon>
                 </div>
             </div>
@@ -65,7 +69,7 @@
                     </template>
                 </div>
                 <div class="slds-col" >
-                    <lightning-button-menu alternative-text="Action menu" menu-alignment="right">
+                    <lightning-button-menu alternative-text="Action menu" menu-alignment="right" variant="container">
                         <lightning-menu-item value="Edit" label="Edit"></lightning-menu-item>
                         <lightning-menu-item value="Delete" label="Delete"></lightning-menu-item>
                         <lightning-menu-item value="Bookmark" label="Bookmark"></lightning-menu-item>
@@ -90,12 +94,17 @@
                 </lightning-button-stateful>
                 </lightning-layout-item>
                     <lightning-layout-item flexibility="auto">
-                        <lightning-button-icon 
-                        icon-name="utility:comments"  
-                        variant="neutral" 
-                        alternative-text="comments"
-                        size='medium'>
-                    </lightning-button-icon>
+                        <div>
+                            <lightning-button-stateful
+                                label-when-off="comments"
+                                label-when-on="comments"
+                                icon-name-when-off="utility:comments"
+                                icon-name-when-on="utility:comments"
+                                variant="text"
+                                onclick={handleComment}>
+                            </lightning-button-stateful>
+                        </div>
+                       
                 </lightning-layout-item>
             </lightning-layout>
             <div class="slds-feed__item-comments">

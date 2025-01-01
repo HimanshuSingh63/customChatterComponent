@@ -11,4 +11,7 @@ export default class ChatterBodyComponent extends LightningElement {
     handlePopOver(){
         this.popOverVisible = !this.popOverVisible;
     }
+    handleComment(){
+        
+    }
 }
