@@ -1,5 +1,5 @@
 <template>
-    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-p-around_x-small bodyHeader">
+    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-p-around_x-small bodyHeader slds-size_full">
         <div class="slds-col ">
             <lightning-button-menu alternative-text="filters" variant="brand-outline" class="circleButton">
                 <lightning-menu-item value="MenuItemOne" label="Menu Item One"></lightning-menu-item>
@@ -30,8 +30,8 @@
             </div>
         </div>
         
-    </div>
-    <div class="slds-feed">
+    </div>  
+    <div class="slds-feed bodyContent">
         <ul class="slds-feed__list">
           <li class="slds-feed__item">
             <div class="slds-grid slds-grid_align-spread">
@@ -108,14 +108,14 @@
                 </lightning-layout-item>
             </lightning-layout>
             <div class="slds-feed__item-comments">
-                <lightning-layout >
-                    <lightning-layout-item size="1" padding="around-small">
+                <div class="slds-grid slds-gutters slds-p-around_small">
+                    <div class="slds-col slds-size_1-of-12">
                         <span class="slds-avatar slds-avatar_profile-image-small slds-avatar_circle"></span>
-                    </lightning-layout-item>
-                    <lightning-layout-item size="11" padding="around-small" >
+                    </div>
+                    <div class="slds-col slds-size_11-of-12">
                         <c-post-component></c-post-component>
-                    </lightning-layout-item>
-                </lightning-layout>
+                    </div>
+                </div>
             </div>
           </li>
          
