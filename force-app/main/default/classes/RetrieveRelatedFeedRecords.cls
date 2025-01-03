@@ -1,31 +1,22 @@
 public with sharing class RetrieveRelatedFeedRecords {
-    public RetrieveRelatedFeedRecords() {
-
-    }
-
     @AuraEnabled(cacheable=true)
-    public static List<FeedItemWrapper> getRelatedFeeds(Id targetObjectId){
-        List<FeedItem> feedItems = [SELECT Id, Body, Title, CreatedBy.Name, 
-                                    (SELECT Id, CommentBody FROM FeedComments) 
+    public static List<Map<String, Object>> getRelatedFeeds(Id targetObjectId){
+        // Query FeedItems with their related comments
+        List<FeedItem> feedItems = [SELECT Id, Body, Title, CreatedBy.Name,
+                                    (SELECT Id, CommentBody,CreatedBy.Name
+                                     FROM FeedComments ORDER BY CreatedDate DESC) 
                                     FROM FeedItem 
-                                    WHERE ParentId = :targetObjectId];
+                                    WHERE ParentId = :targetObjectId
+                                    ORDER BY CreatedDate DESC];
         
-        List<FeedItemWrapper> feedItemWrappers = new List<FeedItemWrapper>();
+        // Initialize result list to store our formatted data
+        List<Map<String, Object>> result = new List<Map<String, Object>>();
+        
         for (FeedItem feedItem : feedItems) {
-            FeedItemWrapper wrapper = new FeedItemWrapper();
-            wrapper.feedItem = feedItem;
-            wrapper.feedComments = feedItem.FeedComments;
-            feedItemWrappers.add(wrapper);
+            Map<String, Object> wrapper = new Map<String, Object>();
+            wrapper.put('feedItem', feedItem);
+            result.add(wrapper);
         }
-        
-        return feedItemWrappers;
-    }
-
-    public class FeedItemWrapper {
-        @AuraEnabled
-        public FeedItem feedItem { get; set; }
-        
-        @AuraEnabled
-        public List<FeedComment> feedComments { get; set; }
+        return result;
     }
 }

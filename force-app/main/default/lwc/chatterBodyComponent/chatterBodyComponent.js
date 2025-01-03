@@ -3,7 +3,7 @@ import getRelatedFeeds from '@salesforce/apex/RetrieveRelatedFeedRecords.getRela
 export default class ChatterBodyComponent extends LightningElement {
     @api
     currrentRecordId;
-    @track feeds;
+    @track feedData;
     isSelected = false;
     popOverVisible = false;
     @track inputValue = '';
@@ -20,8 +20,9 @@ export default class ChatterBodyComponent extends LightningElement {
     @wire(getRelatedFeeds, { targetObjectId: '$currrentRecordId' })
     wiredFeeds({ error, data }) {
         if (data) {
-            console.log('data##', JSON.stringify(data));
-            this.feeds = data;
+            
+            this.feedData = data;
+            console.log('data##', JSON.stringify(this.feedData));
         }
         if (error) {
             console.log('error###', error);
