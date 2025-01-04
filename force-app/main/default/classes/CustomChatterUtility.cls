@@ -1,4 +1,7 @@
-public with sharing class RetrieveRelatedFeedRecords {
+public with sharing class CustomChatterUtility {
+    public CustomChatterUtility() {
+
+    }
     @AuraEnabled(cacheable=true)
     public static List<Map<String, Object>> getRelatedFeeds(Id targetObjectId){
         // Query FeedItems with their related comments
