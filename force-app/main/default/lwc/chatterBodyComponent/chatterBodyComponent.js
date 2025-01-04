@@ -1,5 +1,5 @@
 import { LightningElement,track,api,wire } from 'lwc';
-import getRelatedFeeds from '@salesforce/apex/RetrieveRelatedFeedRecords.getRelatedFeeds';
+import getRelatedFeeds from '@salesforce/apex/CustomChatterUtility.getRelatedFeeds';
 export default class ChatterBodyComponent extends LightningElement {
     @api
     currrentRecordId;
@@ -11,9 +11,9 @@ export default class ChatterBodyComponent extends LightningElement {
     handleClick() {
         this.isSelected = !this.isSelected;
     }
-    handlePopOver(){
-        this.popOverVisible = !this.popOverVisible;
-    }
+    // handlePopOver(){
+    //     this.popOverVisible = !this.popOverVisible;
+    // }
     handleComment(){
         
     }
@@ -28,4 +28,5 @@ export default class ChatterBodyComponent extends LightningElement {
             console.log('error###', error);
         }
     }
+    
 }
