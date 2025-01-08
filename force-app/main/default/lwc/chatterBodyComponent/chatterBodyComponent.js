@@ -60,23 +60,19 @@ export default class ChatterBodyComponent extends LightningElement {
     handleComment(){
         
     }
-    handleFeedAction(e){
-        if(e.target.label === 'Delete'){
-            const feedItemElement = e.target.closest('[data-id]');
-            const feedItemId = feedItemElement.dataset.id;
-            console.log('Delete clicked and div id',feedItemId);
-            this.messageForModal.Title = "Post";
-            this.messageForModal.Body = "Deleting this item permanently removes it. We're just making sure that's what you want.";
-            this.messageForModal.feedItemId = feedItemId;
-            this.showmodal = true;
-        }
-    }
-    handleshowmodal() {
-
+    
+    handleshowmodal(event) {
         console.log('Modal button clicked');
         this.showmodal = !this.showmodal;
-        this.handleRefresh();
+        if(event.detail){
+            let buttonName = event.detail.buttonName;
+            console.log('button name',buttonName);
+            if(buttonName === 'Delete'){
+                this.handleRefresh();
+            }
+        }
     }
+        
     
     
     handleRefresh(){
@@ -116,6 +112,30 @@ export default class ChatterBodyComponent extends LightningElement {
             console.log('No parent feed id');
         }
         
+    }
+    handleFeedAction(e){
+        if(e.target.label === 'Delete'){
+            const feedItemElement = e.target.closest('[data-id]');
+            const feedItemId = feedItemElement.dataset.id;
+            console.log('Delete clicked feeditem id',feedItemId);
+            this.messageForModal.Title = "Post";
+            this.messageForModal.Body = "Deleting this item permanently removes it. We're just making sure that's what you want.";
+            this.messageForModal.Id = feedItemId;
+            this.showmodal = true;
+        }
+    }
+    handleFeedCommentAction(e){
+        if(e.target.label ==='Delete'){
+            const feedCommentElement = e.target.closest('[data-feed-comment-id]');
+            const feedCommentId = feedCommentElement.dataset.feedCommentId;
+            console.log('Delete clcked and feed comment id: ',feedCommentId);
+            this.messageForModal.Title = "Comment";
+            this.messageForModal.Body = "Deleting this item permanently removes it. We're just making sure that's what you want.";
+            this.messageForModal.Id = feedCommentId;
+            this.showmodal = true;
+            console.log('this.showmodal',this.showmodal);
+            
+        }
     }
     showToast(title,variant,message){ 
         const event = new ShowToastEvent({

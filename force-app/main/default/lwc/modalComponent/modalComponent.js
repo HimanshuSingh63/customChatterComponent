@@ -4,26 +4,39 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 export default class ModalComponent extends LightningElement {
     @api message;
     connectedCallback(){
-        console.log('message',JSON.stringify(this.message));
+        console.log('message in modal component',JSON.stringify(this.message));
     }
-    closeModal(){
-        this.dispatchEvent(new CustomEvent('close'));
+    closeModal(event){
+        this.dispatchEvent(new CustomEvent('close',{detail:
+            {buttonName: 'Cancel'}
+        }));
     }
-    handleDelete(){
-        console.log('this.message',this.message.feedItemId);
-        deleteRecord({recordId:this.message.feedItemId})
-        .then(result=>{
-            console.log('result',result);
-            this.dispatchEvent(new CustomEvent('delete'));
-            const event = new ShowToastEvent({
-                title: 'Success',
-                message: `${message.Title} deleted successfully`,
-                variant: 'success',
-            });
-            this.dispatchEvent(event);
-        }) 
-        .catch(error=>{
-            console.log('error',error);    
-        })
+    handleDelete(event){
+        console.log('this.message',this.message.Id);
+        if(this.message.Id){
+            deleteRecord({recordId:this.message.Id})
+            .then(result=>{
+                console.log('result',result);
+                this.dispatchEvent(new CustomEvent('delete',{detail:
+                    {buttonName: 'Delete'}
+                }));
+                const message = `${this.message.Title} deleted successfully`;
+                this.showtoast('Success',message,'success');
+
+            }).catch(error=>{
+                console.log('error message from mmodal',error.body.message);   
+                this.showtoast('Error',error.body.message,'error');
+            })
+        }  
+    }
+
+    showtoast(title,message,variant){
+        const event = new ShowToastEvent({
+            title: title,
+            message: message,
+            variant: variant,
+            mode: 'dismissable'
+        });
+        this.dispatchEvent(event);
     }
 }

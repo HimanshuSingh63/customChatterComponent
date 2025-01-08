@@ -86,9 +86,9 @@
                                     </div>
                                     <div class="slds-col" >
                                         <lightning-button-menu alternative-text="Action menu" menu-alignment="right" variant="container">
-                                            <lightning-menu-item value="Edit" label="Edit"></lightning-menu-item>
+                                            <lightning-menu-item value="Edit" label="Edit" onclick={handleFeedAction}></lightning-menu-item>
                                             <lightning-menu-item value="Delete" label="Delete" onclick={handleFeedAction}></lightning-menu-item>
-                                            <lightning-menu-item value="Bookmark" label="Bookmark"></lightning-menu-item>
+                                            <lightning-menu-item value="Bookmark" label="Bookmark" onclick={handleFeedAction}></lightning-menu-item>
                                         </lightning-button-menu>
                                     </div>
                                 </div>
@@ -128,47 +128,51 @@
                                 <div class="slds-p-horizontal_medium  slds-p-vertical_small">
                                     <template if:true={feed.feedItem.FeedComments}>
                                         <template for:each={feed.feedItem.FeedComments} for:item="comment"> 
-                                            <div key={comment.Id} class="CommentBody" data-feeditemid={comment.FeedItemId}>
-                                                <div class="slds-grid slds-grid_align-spread">
-                                                    <div class="slds-col">
-                                                        <lightning-layout>
-                                                            <lightning-layout-item size="2">
-                                                                <span class="slds-avatar slds-avatar_profile-image-large slds-avatar_circle" onmouseover={handlePopOver}></span>
-                                                            </lightning-layout-item>
-                                                            <lightning-layout-item size="10">
-                                                                <span class="slds-m-horizontal_small slds-is-relative" style="display: inline-block;" >
+                                            <div key={comment.Id} class="CommentBody" data-feeditemid={comment.FeedItemId} data-feed-comment-id={comment.Id}>
+                                                <div class="slds-media">
+                                                    <!-- Avatar/Icon section -->
+                                                    <div class="slds-media__figure">
+                                                        <span class="slds-avatar slds-avatar_profile-image-large slds-avatar_circle" onmouseover={handlePopOver}></span>
+                                                    </div>
+                                                    
+                                                    <!-- Comment content section -->
+                                                    <div class="slds-media__body">
+                                                        <!-- Comment header with name, timestamp, and actions -->
+                                                        <div class="Comment_header">
+                                                            <div class="slds-grid slds-grid_align-spread">
+                                                                <div class="slds-col">
                                                                     <a onmouseover={handlePopOver}>{comment.CreatedBy.Name}</a>
                                                                     <div class="slds-text-body_small slds-text-color_weak">1h ago</div>
-                                                                </span>
-                                                            </lightning-layout-item>
-                                                        </lightning-layout>
+                                                                </div>
+                                                                <div class="slds-col slds-grid_align-end">
+                                                                    <lightning-button-menu alternative-text="Action menu" menu-alignment="right" variant="container">
+                                                                        <lightning-menu-item value="Edit Comment" label="Edit" onclick={handleFeedCommentAction}></lightning-menu-item>
+                                                                        <lightning-menu-item value="Delete Comment" label="Delete" onclick={handleFeedCommentAction}></lightning-menu-item>
+                                                                    </lightning-button-menu>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <!-- Comment body -->
+                                                        <div class="slds-text-longform" data-feeditemid={comment.FeedItemId}>
+                                                            <lightning-formatted-rich-text value={comment.CommentBody}></lightning-formatted-rich-text>
+                                                        </div>
+                                                        
+                                                        <!-- Comment actions -->
+                                                        <div class="slds-p-top_x-small">
+                                                            <lightning-button-stateful
+                                                                label-when-off="Like"
+                                                                label-when-on="Liked"
+                                                                icon-name-when-off="utility:like"
+                                                                icon-name-when-on="utility:like"
+                                                                variant="text"
+                                                                selected={isSelected}
+                                                                onclick={handleClick}>
+                                                            </lightning-button-stateful>
+                                                        </div>
                                                     </div>
-                                                    <div class="slds-col">
-                                                        <lightning-button-menu alternative-text="Action menu" menu-alignment="right" variant="container">
-                                                            <lightning-menu-item value="Edit" label="Edit"></lightning-menu-item>
-                                                            <lightning-menu-item value="Delete" label="Delete"></lightning-menu-item>
-                                                        </lightning-button-menu>
-                                                    
-                                                    </div>
-                                                
                                                 </div>
-                                                <div class="slds-text-longform" data-feeditemid={comment.FeedItemId}>
-                                                    <lightning-formatted-rich-text value={comment.CommentBody}></lightning-formatted-rich-text>
-                                                </div>
-                                                <lightning-layout vertical-align="stretch" multiple-rows="true" >
-                                                    <lightning-layout-item flexibility="auto">
-                                                        <lightning-button-stateful
-                                                            label-when-off="Like"
-                                                            label-when-on="Liked"
-                                                            icon-name-when-off="utility:like"
-                                                            icon-name-when-on="utility:like"
-                                                            variant="text"
-                                                            selected={isSelected}
-                                                            onclick={handleClick}>
-                                                        </lightning-button-stateful>
-                                                    </lightning-layout-item>
-                                                </lightning-layout>
-                                            </div> 
+                                            </div>
                                         </template>
                                     </template>
                                     <div class="slds-grid slds-gutters slds-p-around_small">
