@@ -136,7 +136,7 @@
                                                     </div>
                                                     
                                                     <!-- Comment content section -->
-                                                    <div class="slds-media__body">
+                                                    <div class="slds-media__body slds-p-bottom_x-small">
                                                         <!-- Comment header with name, timestamp, and actions -->
                                                         <div class="Comment_header">
                                                             <div class="slds-grid slds-grid_align-spread">
@@ -154,12 +154,12 @@
                                                         </div>
                                                         
                                                         <!-- Comment body -->
-                                                        <div class="slds-text-longform" data-feeditemid={comment.FeedItemId}>
+                                                        <div class="comment-content slds-p-top_xx-small" data-feeditemid={comment.FeedItemId}>
                                                             <lightning-formatted-rich-text value={comment.CommentBody}></lightning-formatted-rich-text>
                                                         </div>
                                                         
                                                         <!-- Comment actions -->
-                                                        <div class="slds-p-top_x-small">
+                                                        <div>
                                                             <lightning-button-stateful
                                                                 label-when-off="Like"
                                                                 label-when-on="Liked"
