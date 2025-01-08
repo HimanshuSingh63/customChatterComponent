@@ -47,7 +47,7 @@
             <ul class="slds-feed__list">
                 <template if:true={feedData}>
                     <template for:each={feedData} for:item="feed">
-                        <li key={feed.feedItem.Id} class="slds-feed__item">
+                        <li key={feed.feedItem.Id} data-id={feed.feedItem.Id} class="slds-feed__item elementWrapper">
                             <!-- main body starts here -->
                             <div data-id={feed.feedItem.Id} class="mainbody slds-p-horizontal_medium">
                                 <div class="slds-grid slds-grid_align-spread">
@@ -59,7 +59,7 @@
                                             <lightning-layout-item size="10">
                                                 <span class="slds-m-horizontal_small slds-is-relative" style="display: inline-block;">
                                                     <a onmouseover={handlePopOver}>{feed.feedItem.CreatedBy.Name}</a>
-                                                    <div class="slds-text-body_small slds-text-color_weak">1h ago</div>
+                                                    <div class="slds-text-body_small slds-text-color_weak">Today</div>
                                                 </span>
                                             </lightning-layout-item>
                                         </lightning-layout>
@@ -128,7 +128,7 @@
                                 <div class="slds-p-horizontal_medium  slds-p-vertical_small">
                                     <template if:true={feed.feedItem.FeedComments}>
                                         <template for:each={feed.feedItem.FeedComments} for:item="comment"> 
-                                            <div key={comment.Id}>
+                                            <div key={comment.Id} class="CommentBody" data-feeditemid={comment.FeedItemId}>
                                                 <div class="slds-grid slds-grid_align-spread">
                                                     <div class="slds-col">
                                                         <lightning-layout>
@@ -136,7 +136,7 @@
                                                                 <span class="slds-avatar slds-avatar_profile-image-large slds-avatar_circle" onmouseover={handlePopOver}></span>
                                                             </lightning-layout-item>
                                                             <lightning-layout-item size="10">
-                                                                <span class="slds-m-horizontal_small slds-is-relative" style="display: inline-block;">
+                                                                <span class="slds-m-horizontal_small slds-is-relative" style="display: inline-block;" >
                                                                     <a onmouseover={handlePopOver}>{comment.CreatedBy.Name}</a>
                                                                     <div class="slds-text-body_small slds-text-color_weak">1h ago</div>
                                                                 </span>
@@ -152,7 +152,7 @@
                                                     </div>
                                                 
                                                 </div>
-                                                <div class="slds-text-longform">
+                                                <div class="slds-text-longform" data-feeditemid={comment.FeedItemId}>
                                                     <lightning-formatted-rich-text value={comment.CommentBody}></lightning-formatted-rich-text>
                                                 </div>
                                                 <lightning-layout vertical-align="stretch" multiple-rows="true" >
@@ -176,7 +176,7 @@
                                             <span class="slds-avatar slds-avatar_profile-image-small slds-avatar_circle"></span>
                                         </div>
                                         <div class="slds-col slds-size_11-of-12">
-                                            <c-post-component></c-post-component>
+                                            <c-post-component type={type} oncreatefeedcomment={handleCreateFeedComment}></c-post-component>
                                         </div>
                                     </div>
                                 </div>
@@ -191,3 +191,5 @@
         </template>
     </div> 
 </template>
+
+    

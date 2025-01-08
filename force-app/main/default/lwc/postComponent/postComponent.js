@@ -8,6 +8,7 @@ export default class PostComponent extends LightningElement {
     @api currentRecordId;
     @track showRichText = false;
     @track richTextValue = '';
+    @api type = '';
 
     get isShareDisable() {
         // Remove HTML tags, decode HTML entities, and trim whitespace
@@ -44,19 +45,33 @@ export default class PostComponent extends LightningElement {
         console.log('add emoji clicked');
         
     }
-    handleShare(){
-        console.log('share clicked','currentRecordId ',this.currentRecordId,'richTextValue ',this.richTextValue);
-        createFeedItem({Body:this.richTextValue,ParentId:this.currentRecordId})
-        .then(result=>{
-            console.log('result ', result);
-            this.showToast('Success','success','Post shared successfully');
-            publish(this.messageContext, CUSTOM_CHATTER_COMPONENT_CHANNEL, {});
-        })
-        .catch(error=>{
-            console.log('error ',error.body.message);
-            this.showToast('Error','Error',error.body.message);
-        });
-        this.handleClose();
+    handleShare(event){
+        console.log('share clicked currentRecordId ',this.currentRecordId,
+            'richTextValue ',this.richTextValue,
+            'type ',this.type
+        );
+        if(this.type === 'FeedItem' ){
+            if(this.currentRecordId && this.richTextValue){
+                    createFeedItem({Body:this.richTextValue,ParentId:this.currentRecordId})
+                    .then(result=>{
+                        console.log('result ', result);
+                        this.showToast('Success','success','Post shared successfully');
+                        publish(this.messageContext, CUSTOM_CHATTER_COMPONENT_CHANNEL, {});
+                    })
+                    .catch(error=>{
+                        console.log('error ',error.body.message);
+                        this.showToast('Error','Error',error.body.message);
+                    });
+                    this.handleClose();
+            }
+        }else if(this.type == 'FeedComment'){
+            let value = this.richTextValue ? this.richTextValue : 'okook';
+                const event = new CustomEvent("createfeedcomment", { detail: value});
+                this.dispatchEvent(event);
+                this.handleClose();
+
+            }
+        
     }
     handleClose(){
         this.showRichText = false;
@@ -71,4 +86,5 @@ export default class PostComponent extends LightningElement {
         });
         this.dispatchEvent(event);
     }
+
 }

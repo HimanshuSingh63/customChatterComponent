@@ -36,19 +36,35 @@ public with sharing class CustomChatterUtility {
         
     }
     @AuraEnabled
-    public static void deleteFeedItem(String feedItemId) {
+    public static void deleteRecord(String recordId) {
         try {
-            System.debug('method called feedItemId: '+feedItemId);
+            Id RecordIdTodelete = (Id)recordId;
+            Schema.SObjectType typeOfSobject = RecordIdTodelete.getSObjectType();
+            String objectTypeName = String.valueOf(typeOfSobject);
+            System.debug('sObject Type is ' + objectTypeName);
+                
             // Check if the user has the necessary permissions to delete the feed item
-            if (!Schema.sObjectType.FeedItem.isDeletable()) {
-                throw new AuraHandledException('You do not have the necessary permissions to delete this feed item.');
+            if (!typeOfSobject.getDescribe().isDeletable()) {
+                throw new AuraHandledException('You do not have the necessary permissions to delete this ' + objectTypeName);
             }
-
+    
             // Delete the feed item
-            Database.DeleteResult result = Database.delete(feedItemId);
+            Database.DeleteResult result = Database.delete(RecordIdTodelete);
             if (!result.isSuccess()) {
-                throw new AuraHandledException('Error deleting feed item: '+ result.getErrors()[0].getMessage());
+                throw new AuraHandledException('Error deleting ' + objectTypeName + ': ' + result.getErrors()[0].getMessage());
             }
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+    
+    @AuraEnabled
+    public static void createFeedComment(String CommentBody,String FeedItemId){
+        try {
+            FeedComment comment = new FeedComment();
+            comment.CommentBody = CommentBody;
+            comment.FeedItemId = FeedItemId;
+            insert comment;
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
