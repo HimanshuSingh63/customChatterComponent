@@ -6,8 +6,8 @@ public with sharing class CustomChatterUtility {
     @AuraEnabled(cacheable=true)
     public static List<Map<String, Object>> getRelatedFeeds(Id targetObjectId){
         // Query FeedItems with their related comments
-        List<FeedItem> feedItems = [SELECT Id, Body, Title, CreatedBy.Name,
-                                    (SELECT Id, CommentBody,CreatedBy.Name
+        List<FeedItem> feedItems = [SELECT Id, Body, Title, CreatedBy.Name,LastModifiedDate,
+                                    (SELECT Id, CommentBody,CreatedBy.Name,ThreadLastUpdatedDate
                                      FROM FeedComments ORDER BY CreatedDate DESC) 
                                     FROM FeedItem 
                                     WHERE ParentId = :targetObjectId
@@ -26,10 +26,11 @@ public with sharing class CustomChatterUtility {
     @AuraEnabled
     public static void createFeedItem(String Body,String ParentId){
         try {
-                FeedItem post = new FeedItem();
-                post.Body = Body;
-                post.ParentId = ParentId;
-                insert post;
+            FeedItem post = new FeedItem();
+            post.Body = Body;
+            post.ParentId = ParentId;
+            post.IsRichText = true;
+            insert post;
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
@@ -64,9 +65,11 @@ public with sharing class CustomChatterUtility {
             FeedComment comment = new FeedComment();
             comment.CommentBody = CommentBody;
             comment.FeedItemId = FeedItemId;
+            comment.IsRichText = true;
             insert comment;
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
     }
+    
 }

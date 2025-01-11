@@ -1,5 +1,5 @@
 <template>
-    <div class="slds-is-relative">
+    <!-- <div class="slds-is-relative"> -->
         <!-- Spinner with overlay -->
         <template if:true={isLoading}>
             <div class="slds-spinner_container">
@@ -14,8 +14,8 @@
         <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-p-around_x-small bodyHeader slds-size_full">
             <div class="slds-col ">
                 <lightning-button-menu alternative-text="filters" variant="brand-outline" class="circleButton">
-                    <lightning-menu-item value="MenuItemOne" label="Menu Item One"></lightning-menu-item>
-                    <lightning-menu-item value="MenuItemTwo" label="Menu Item Two"></lightning-menu-item>
+                    <lightning-menu-item value="Latest Posts" label="Latest Posts" onclick={handleFilters}></lightning-menu-item>
+                    <lightning-menu-item value="Most Recent Activity" label="Most Recent Activity" onclick={handleFilters}></lightning-menu-item>
                 </lightning-button-menu>
             </div>
             <div class="slds-col">
@@ -25,8 +25,11 @@
                             name="enter-search"
                             type="search"
                             variant="label-hidden"
-                            placeholder="Search"
+                            placeholder="Search"    
                             class="circleInput"
+                            value={Searchterm}
+                            onchange={handleSearch}
+                            oncommit={handleClearSearch}
                         ></lightning-input>
                     </div>
                     <div class="slds-col">
@@ -193,7 +196,7 @@
         <template if:true={showmodal}>
             <c-modal-component onclose={handleshowmodal} ondelete={handleshowmodal} message={messageForModal}></c-modal-component>
         </template>
-    </div> 
+    <!-- </div>  -->
 </template>
 
     

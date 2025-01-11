@@ -14,10 +14,12 @@ export default class ChatterBodyComponent extends LightningElement {
     @track inputValue = '';
     wiredFeedResults;
     messageForModal = {};
-    @track isLoading = false;
+    @track isLoading = true;
     subscription = null;
     messageFromPost;
     type = 'FeedComment';
+    @track Searchterm;
+    
 
     @wire(MessageContext)
     messageContext;
@@ -44,6 +46,7 @@ export default class ChatterBodyComponent extends LightningElement {
         this.wiredFeedResults = result;
         const { data, error } = result;
         if (data) {
+            this.isLoading = false;
             this.feedData = data;
             console.log('data##', JSON.stringify(this.feedData));
         }
@@ -60,6 +63,14 @@ export default class ChatterBodyComponent extends LightningElement {
     handleComment(){
         
     }
+    handleFilters(event){
+        if(event.target.value === 'Latest Posts'){
+            this.handleRefresh();
+        }
+        else if(event.target.value === 'Most Recent Activity'){
+            
+        }
+    }
     
     handleshowmodal(event) {
         console.log('Modal button clicked');
@@ -72,11 +83,9 @@ export default class ChatterBodyComponent extends LightningElement {
             }
         }
     }
-        
-    
-    
     handleRefresh(){
         console.log('refresh clicked');
+        this.Searchterm = ''
         this.isLoading = true;
         return refreshApex(this.wiredFeedResults)
             .then(() => {
@@ -89,7 +98,7 @@ export default class ChatterBodyComponent extends LightningElement {
     }
     handleCreateFeedComment(event){
         let CommentBody = event.detail;
-        let feedItemId;
+        let feedItemId; 
         const parentLi = event.target.closest('.elementWrapper');
 
         if (parentLi) {
@@ -136,6 +145,52 @@ export default class ChatterBodyComponent extends LightningElement {
             console.log('this.showmodal',this.showmodal);
             
         }
+    }
+    handleSearch(evt) {
+        console.log('search clicked');
+        // const isEnterKey = evt.keyCode === 13;
+        this.Searchterm = evt.target.value;
+                
+            if (this.Searchterm) {
+                console.log(
+                    'search term',
+                    this.Searchterm);
+                
+                const searchTermLower = this.Searchterm.toLowerCase();
+                // Filter from wiredFeedResults.data instead of feedData
+                let filteredData = this.wiredFeedResults.data.filter(feedItem => {
+                    // Check if the search term is in the feed item body
+                    let inFeedItem = feedItem.feedItem.Body.toLowerCase().includes(searchTermLower);
+                    console.log('inFeedItem ', inFeedItem);
+                
+                    // If the search term is not in the feed item body, check the comments
+                    let inFeedComment = false;
+                    if (!inFeedItem) {
+                        inFeedComment = feedItem.feedItem.FeedComments?.some(comment =>
+                            comment.CommentBody.toLowerCase().includes(searchTermLower)
+                        );
+                        console.log('inFeedComment ', inFeedComment);
+                    }
+                    return inFeedItem || inFeedComment;
+                });
+                console.log('filteredData ', JSON.stringify(this.filteredData));    
+                if(filteredData){
+                    this.feedData = filteredData;
+                }else{
+                    this.feedData = [];
+                } 
+
+            } else {
+                this.feedData = this.wiredFeedResults.data;
+            }
+    }
+    handleClearSearch(){
+        console.log('clear click');
+        this.feedData = this.wiredFeedResults.data;    
+    }
+    handleCloseModal(){
+        this.showmodal = false;
+        
     }
     showToast(title,variant,message){ 
         const event = new ShowToastEvent({

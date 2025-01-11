@@ -45,7 +45,7 @@ export default class PostComponent extends LightningElement {
         console.log('add emoji clicked');
         
     }
-    handleShare(event){
+    handleShare(){
         console.log('share clicked currentRecordId ',this.currentRecordId,
             'richTextValue ',this.richTextValue,
             'type ',this.type
