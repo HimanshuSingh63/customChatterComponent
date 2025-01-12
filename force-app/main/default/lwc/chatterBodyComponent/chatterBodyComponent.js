@@ -1,76 +1,64 @@
 import { LightningElement,track,api,wire } from 'lwc';
-import getRelatedFeeds from '@salesforce/apex/CustomChatterUtility.getRelatedFeeds';
-import { refreshApex } from '@salesforce/apex';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import { subscribe, MessageContext } from 'lightning/messageService';
+import { publish, MessageContext } from 'lightning/messageService';
 import createFeedComment from '@salesforce/apex/CustomChatterUtility.createFeedComment';
+import manageLike from '@salesforce/apex/CustomChatterUtility.manageLike';
 import CUSTOM_CHATTER_COMPONENT_CHANNEL from '@salesforce/messageChannel/Custom_Chatter_Component__c';
 export default class ChatterBodyComponent extends LightningElement {
     @track showmodal=false;
-    @api currrentRecordId;
-    @track feedData;
-    isSelected = false;
+    @track feed;
+    @track isLiked = false;
     popOverVisible = false;
-    @track inputValue = '';
-    wiredFeedResults;
     messageForModal = {};
-    @track isLoading = true;
-    subscription = null;
-    messageFromPost;
     type = 'FeedComment';
-    @track Searchterm;
-    
-
     @wire(MessageContext)
     messageContext;
 
-    subscribeToMessageChannel() {
-        this.subscription = subscribe(
-            this.messageContext,
-            CUSTOM_CHATTER_COMPONENT_CHANNEL,
-            () => this.handleRefresh()
-        );
-    }
-    handleMessage(message) {
-        this.messageFromPost = message.recordId;
-        console.log('messageFromPost@@',this.messageFromPost);
-        
+    get buttonText() {
+        return this.isLiked ? 'Liked' : 'Like';
     }
 
-    connectedCallback() {
-        this.subscribeToMessageChannel();
+    get iconClass() {
+        return this.isLiked ? 'like-icon filled' : 'like-icon';
+    }
+
+    get textClass() {
+        return this.isLiked ? 'slds-p-left_x-small liked-text' : 'slds-p-left_x-small';
+    }
+
+    @api
+    get values(){
+        return this.feed;
+    }
+    set values(value){
+        console.log(
+            'set values',
+            JSON.stringify(value));
+        this.feed = value;
+        this.isLiked = value.feedItem.IsLiked;
     }
     
-    @wire(getRelatedFeeds, { targetObjectId: '$currrentRecordId' })
-    wiredFeeds(result) {
-        this.wiredFeedResults = result;
-        const { data, error } = result;
-        if (data) {
-            this.isLoading = false;
-            this.feedData = data;
-            console.log('data##', JSON.stringify(this.feedData));
-        }
-        if (error) {
-            this.isLoading = false;
-            console.log('error###', error);
-        }
-    }
-    handleClick() {
-        this.isSelected = !this.isSelected; 
-    }
-    // handlePopOver(){
-    //     this.popOverVisible = !this.popOverVisible;
-    // }
-    handleComment(){
-        
-    }
-    handleFilters(event){
-        if(event.target.value === 'Latest Posts'){
-            this.handleRefresh();
-        }
-        else if(event.target.value === 'Most Recent Activity'){
+    handleLikeClick() {
+        this.isLiked = !this.isLiked;
+        try {
+            console.log('called');
+            
+            manageLike({mark:this.isLiked,feedItemId:this.feed.feedItem.Id})
+            .then(result=>{
+                console.log('result ', result);
+            })
+            .catch(error=>{
+                console.log('error ',error.body.message);
+            });
+        } catch (error) {
+            console.log('error ',error.body.message);
             
         }
+        
+
+    }
+    handleComment(){
+        
     }
     
     handleshowmodal(event) {
@@ -80,30 +68,19 @@ export default class ChatterBodyComponent extends LightningElement {
             let buttonName = event.detail.buttonName;
             console.log('button name',buttonName);
             if(buttonName === 'Delete'){
-                this.handleRefresh();
+                publish(this.messageContext, CUSTOM_CHATTER_COMPONENT_CHANNEL, {});
             }
         }
     }
-    handleRefresh(){
-        console.log('refresh clicked');
-        this.Searchterm = ''
-        this.isLoading = true;
-        return refreshApex(this.wiredFeedResults)
-            .then(() => {
-                this.isLoading = false;  
-            })
-            .catch(error => {
-                console.error('Error refreshing data:', error);
-                this.isLoading = false;  
-            });
-    }
+   
     handleCreateFeedComment(event){
         let CommentBody = event.detail;
         let feedItemId; 
-        const parentLi = event.target.closest('.elementWrapper');
-
-        if (parentLi) {
-            feedItemId = parentLi.dataset.id;
+        const element = this.template.querySelector('.mainbody');
+        console.log('parentLi',element);
+    
+        if (element) {
+            feedItemId = element.dataset.id;
             console.log('Using parent feed id:', feedItemId);
 
             if(CommentBody && feedItemId){ 
@@ -111,7 +88,7 @@ export default class ChatterBodyComponent extends LightningElement {
                 .then(reuslt=>{
                     console.log('result ', reuslt);
                     this.showToast('Success','success','Comment shared successfully');
-                    this.handleRefresh();
+                    publish(this.messageContext, CUSTOM_CHATTER_COMPONENT_CHANNEL, {});
                 })
                 .catch(error=>{
                     console.log('error ',error.body.message);
@@ -134,6 +111,7 @@ export default class ChatterBodyComponent extends LightningElement {
             this.showmodal = true;
         }
     }
+
     handleFeedCommentAction(e){
         if(e.target.label ==='Delete'){
             const feedCommentElement = e.target.closest('[data-feed-comment-id]');
@@ -146,48 +124,6 @@ export default class ChatterBodyComponent extends LightningElement {
             console.log('this.showmodal',this.showmodal);
             
         }
-    }
-    handleSearch(evt) {
-        console.log('search clicked');
-        // const isEnterKey = evt.keyCode === 13;
-        this.Searchterm = evt.target.value;
-                
-            if (this.Searchterm) {
-                console.log(
-                    'search term',
-                    this.Searchterm);
-                
-                const searchTermLower = this.Searchterm.toLowerCase();
-                // Filter from wiredFeedResults.data instead of feedData
-                let filteredData = this.wiredFeedResults.data.filter(feedItem => {
-                    // Check if the search term is in the feed item body
-                    let inFeedItem = feedItem.feedItem.Body.toLowerCase().includes(searchTermLower);
-                    console.log('inFeedItem ', inFeedItem);
-                
-                    // If the search term is not in the feed item body, check the comments
-                    let inFeedComment = false;
-                    if (!inFeedItem) {
-                        inFeedComment = feedItem.feedItem.FeedComments?.some(comment =>
-                            comment.CommentBody.toLowerCase().includes(searchTermLower)
-                        );
-                        console.log('inFeedComment ', inFeedComment);
-                    }
-                    return inFeedItem || inFeedComment;
-                });
-                console.log('filteredData ', JSON.stringify(this.filteredData));    
-                if(filteredData){
-                    this.feedData = filteredData;
-                }else{
-                    this.feedData = [];
-                } 
-
-            } else {
-                this.feedData = this.wiredFeedResults.data;
-            }
-    }
-    handleClearSearch(){
-        console.log('clear click');
-        this.feedData = this.wiredFeedResults.data;    
     }
     handleCloseModal(){
         this.showmodal = false;
@@ -202,25 +138,6 @@ export default class ChatterBodyComponent extends LightningElement {
         });
         this.dispatchEvent(event);
     }
-    @track isLiked = false;
+    
 
-    get buttonText() {
-        return this.isLiked ? 'Liked' : 'Like';
-    }
-
-    get iconName() {
-        return this.isLiked ? 'utility:like' : 'utility:like';
-    }
-
-    get iconClass() {
-        return this.isLiked ? 'like-icon filled' : 'like-icon';
-    }
-
-    get textClass() {
-        return this.isLiked ? 'slds-p-left_x-small liked-text' : 'slds-p-left_x-small';
-    }
-
-    handleLikeClick() {
-        this.isLiked = !this.isLiked;
-    }
 }

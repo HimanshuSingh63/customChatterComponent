@@ -65,7 +65,7 @@ export default class PostComponent extends LightningElement {
                     this.handleClose();
             }
         }else if(this.type == 'FeedComment'){
-            let value = this.richTextValue ? this.richTextValue : 'okook';
+            let value = this.richTextValue ? this.richTextValue : '';
                 const event = new CustomEvent("createfeedcomment", { detail: value});
                 this.dispatchEvent(event);
                 this.handleClose();

@@ -2,11 +2,9 @@ public with sharing class CustomChatterUtility {
     public CustomChatterUtility() {
 
     }
-
+    public Static Id currentUserId = UserInfo.getUserId();
     @AuraEnabled(cacheable=true)
     public static List<Map<String, Object>> getRelatedFeeds(Id targetObjectId) {
-        
-        Id currentUserId = UserInfo.getUserId();
     
         // Query FeedItems with their related comments and likes
         List<FeedItem> feedItems = [
@@ -114,6 +112,31 @@ public with sharing class CustomChatterUtility {
             comment.FeedItemId = FeedItemId;
             comment.IsRichText = true;
             insert comment;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+    @AuraEnabled
+    public static void manageLike(Boolean mark,String feedItemId){
+        try {
+            System.debug('Called');
+            if(feedItemId!=null){
+                if(mark){
+                    FeedLike likePost = new FeedLike();
+                    likePost.FeedItemId = feedItemId;
+                    insert likePost;
+                }else{
+                    FeedItem likePost = [SELECT Id,(SELECT Id,FeedItemId FROM FeedLikes 
+                                                    WHERE FeedItemId=:feedItemId 
+                                                    AND InsertedById=:currentUserId 
+                                                    LIMIT 1) 
+                                        FROM FeedItem 
+                                        WHERE Id=:feedItemId LIMIT 1];
+                    if(likePost.FeedLikes!=null && likePost.FeedLikes.size()>0){
+                        Delete likePost.FeedLikes[0];
+                    }
+                }
+            }
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
