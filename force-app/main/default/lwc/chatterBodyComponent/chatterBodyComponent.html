@@ -61,7 +61,7 @@
                                             </lightning-layout-item>
                                             <lightning-layout-item size="10">
                                                 <span class="slds-m-horizontal_small slds-is-relative" style="display: inline-block;">
-                                                    <a onmouseover={handlePopOver}>{feed.feedItem.CreatedBy.Name}</a>
+                                                    <a onmouseover={handlePopOver}>{feed.feedItem.CreatedByName}</a>
                                                     <div class="slds-text-body_small slds-text-color_weak">Today</div>
                                                 </span>
                                             </lightning-layout-item>
@@ -101,15 +101,14 @@
                             
                                 <lightning-layout vertical-align="stretch" multiple-rows="true" >
                                     <lightning-layout-item flexibility="auto">
-                                        <lightning-button-stateful
-                                            label-when-off="Like"
-                                            label-when-on="Liked"
-                                            icon-name-when-off="utility:like"
-                                            icon-name-when-on="utility:like"
-                                            variant="text"
-                                            selected={isSelected}
-                                            onclick={handleClick}>
-                                        </lightning-button-stateful>
+                                        <div class="like-container" onclick={handleLikeClick}>
+                                            <lightning-icon
+                                                icon-name={iconName}
+                                                size="xx-small"
+                                                class={iconClass}
+                                            ></lightning-icon>
+                                            <span class={textClass}>{buttonText}</span>
+                                        </div>
                                     </lightning-layout-item>
                                         <lightning-layout-item flexibility="auto">
                                             <div>
@@ -144,7 +143,7 @@
                                                         <div class="Comment_header">
                                                             <div class="slds-grid slds-grid_align-spread">
                                                                 <div class="slds-col">
-                                                                    <a onmouseover={handlePopOver}>{comment.CreatedBy.Name}</a>
+                                                                    <a onmouseover={handlePopOver}>{comment.CreatedByName}</a>
                                                                     <div class="slds-text-body_small slds-text-color_weak">1h ago</div>
                                                                 </div>
                                                                 <div class="slds-col slds-grid_align-end">
@@ -162,7 +161,7 @@
                                                         </div>
                                                         
                                                         <!-- Comment actions -->
-                                                        <div>
+                                                        <!-- <div>
                                                             <lightning-button-stateful
                                                                 label-when-off="Like"
                                                                 label-when-on="Liked"
@@ -172,7 +171,7 @@
                                                                 selected={isSelected}
                                                                 onclick={handleClick}>
                                                             </lightning-button-stateful>
-                                                        </div>
+                                                        </div> -->
                                                     </div>
                                                 </div>
                                             </div>
@@ -196,7 +195,6 @@
         <template if:true={showmodal}>
             <c-modal-component onclose={handleshowmodal} ondelete={handleshowmodal} message={messageForModal}></c-modal-component>
         </template>
-    <!-- </div>  -->
 </template>
 
     

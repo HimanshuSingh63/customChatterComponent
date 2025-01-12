@@ -2,27 +2,74 @@ public with sharing class CustomChatterUtility {
     public CustomChatterUtility() {
 
     }
-    // Method to get related feeds for a given object
+
     @AuraEnabled(cacheable=true)
-    public static List<Map<String, Object>> getRelatedFeeds(Id targetObjectId){
-        // Query FeedItems with their related comments
-        List<FeedItem> feedItems = [SELECT Id, Body, Title, CreatedBy.Name,LastModifiedDate,
-                                    (SELECT Id, CommentBody,CreatedBy.Name,ThreadLastUpdatedDate
-                                     FROM FeedComments ORDER BY CreatedDate DESC) 
-                                    FROM FeedItem 
-                                    WHERE ParentId = :targetObjectId
-                                    ORDER BY CreatedDate DESC];
+    public static List<Map<String, Object>> getRelatedFeeds(Id targetObjectId) {
         
-        // Initialize result list to store our formatted data
+        Id currentUserId = UserInfo.getUserId();
+    
+        // Query FeedItems with their related comments and likes
+        List<FeedItem> feedItems = [
+            SELECT Id, Body, CreatedBy.Name, LastModifiedDate,
+                   (SELECT Id, CommentBody, CreatedBy.Name, ThreadLastUpdatedDate
+                    FROM FeedComments ORDER BY CreatedDate DESC),
+                   (SELECT Id, InsertedById FROM FeedLikes)
+            FROM FeedItem 
+            WHERE ParentId = :targetObjectId
+            ORDER BY CreatedDate DESC
+        ];
+    
+        // Result list to store formatted data
+        Set<String> processedFeedItemIds = new Set<String>();
         List<Map<String, Object>> result = new List<Map<String, Object>>();
-        
+    
         for (FeedItem feedItem : feedItems) {
-            Map<String, Object> wrapper = new Map<String, Object>();
-            wrapper.put('feedItem', feedItem);
-            result.add(wrapper);
+            // Skip if feed item already processed
+            if (processedFeedItemIds.contains(feedItem.Id)) {
+                continue;
+            }
+            processedFeedItemIds.add(feedItem.Id);
+        
+            // Determine if the current user liked this feed item
+            Boolean isLiked = false;
+            if (feedItem.FeedLikes != null) {
+                for (FeedLike feedLike : feedItem.FeedLikes) {
+                    if (feedLike.InsertedById == currentUserId) {
+                        isLiked = true;
+                        break;
+                    }
+                }
+            }
+        
+            // Prepare the FeedComments as a list of feedComments
+            List<Map<String, Object>> feedComments = new List<Map<String, Object>>();
+            if (feedItem.FeedComments != null) {
+                for (FeedComment comment : feedItem.FeedComments) {
+                    Map<String, Object> feedCommentWrapper = new Map<String, Object>();
+                    feedCommentWrapper.put('CommentBody', comment.CommentBody);
+                    feedCommentWrapper.put('CreatedByName', comment.CreatedBy.Name);
+                    feedCommentWrapper.put('Id', comment.Id);
+                    feedComments.add(feedCommentWrapper);
+                }
+            }
+        
+            // Create a FeedItemWrapper instance
+            Map<String, Object> feedItemWrapper = new Map<String, Object>();
+            feedItemWrapper.put('Id', feedItem.Id);
+            feedItemWrapper.put('Body', feedItem.Body);
+            feedItemWrapper.put('CreatedByName', feedItem.CreatedBy.Name);
+            feedItemWrapper.put('ThreadLastUpdatedDate', feedItem.LastModifiedDate);
+            feedItemWrapper.put('IsLiked', isLiked);
+            feedItemWrapper.put('FeedComments', feedComments);
+        
+            // Add the wrapper to the result with a structure matching the desired JSON
+            Map<String, Object> singleFeedItem = new Map<String, Object>();
+            singleFeedItem.put('feedItem', feedItemWrapper);
+            result.add(singleFeedItem);
         }
         return result;
     }
+    
     @AuraEnabled
     public static void createFeedItem(String Body,String ParentId){
         try {

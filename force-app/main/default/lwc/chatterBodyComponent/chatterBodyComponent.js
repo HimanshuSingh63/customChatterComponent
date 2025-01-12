@@ -51,6 +51,7 @@ export default class ChatterBodyComponent extends LightningElement {
             console.log('data##', JSON.stringify(this.feedData));
         }
         if (error) {
+            this.isLoading = false;
             console.log('error###', error);
         }
     }
@@ -200,5 +201,26 @@ export default class ChatterBodyComponent extends LightningElement {
             message: message
         });
         this.dispatchEvent(event);
+    }
+    @track isLiked = false;
+
+    get buttonText() {
+        return this.isLiked ? 'Liked' : 'Like';
+    }
+
+    get iconName() {
+        return this.isLiked ? 'utility:like' : 'utility:like';
+    }
+
+    get iconClass() {
+        return this.isLiked ? 'like-icon filled' : 'like-icon';
+    }
+
+    get textClass() {
+        return this.isLiked ? 'slds-p-left_x-small liked-text' : 'slds-p-left_x-small';
+    }
+
+    handleLikeClick() {
+        this.isLiked = !this.isLiked;
     }
 }

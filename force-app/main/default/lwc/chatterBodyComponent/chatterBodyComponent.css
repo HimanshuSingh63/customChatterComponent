@@ -28,7 +28,23 @@
     transition: all 0.2s ease;
     border-radius: 0.25rem;
 }
+.like-container {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
 
+.like-icon {
+    --sds-c-icon-color-foreground-default: #747474;
+}
+
+.filled {
+    --sds-c-icon-color-foreground-default: rgb(1, 118, 211);
+}
+
+.liked-text {
+    color: rgb(1, 118, 211);
+}
 /* Optional: Add a subtle animation to the spinner itself 
 .slds-spinner_container lightning-spinner {
     animation: fadeIn 0.2s ease-in;
