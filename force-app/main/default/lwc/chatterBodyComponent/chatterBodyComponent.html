@@ -1,48 +1,51 @@
     <template>
         <!-- feed item body -->
         <div data-id={feed.feedItem.Id} class="mainbody slds-p-horizontal_medium">
-            <div class="slds-grid slds-grid_align-spread">
-                <div class="slds-col">
-                    <lightning-layout>
-                        <lightning-layout-item size="2">
-                            <span class="slds-avatar slds-avatar_profile-image-large slds-avatar_circle" onmouseover={handlePopOver}></span>
-                        </lightning-layout-item>
-                        <lightning-layout-item size="10">
-                            <span class="slds-m-horizontal_small slds-is-relative" style="display: inline-block;">
+            <!-- <template if:true={popOverVisible}>
+                <section aria-label="Dialog title" 
+                        aria-describedby="popover-body-id" 
+                        class="slds-popover slds-nubbin_right" 
+                        role="dialog" 
+                        style="position: absolute; top: -10px; right: 105%; z-index: 9999; width: 320px;">
+                    <lightning-button-icon 
+                        icon-name="utility:close" 
+                        variant="bare" 
+                        size="small" 
+                        class="slds-float_right slds-popover__close" 
+                        alternative-text="Close dialog"
+                        title="Close dialog"
+                        onclick={handlePopOver}>
+                    </lightning-button-icon>
+                    <div id="popover-body-id" class="slds-popover__body">
+                        <p>Hey there! Here's the latest demo. let me know if there are any changes.</p>
+                    </div>
+                </section>
+            </template>  --> 
+            <div class="slds-media">
+                <!-- Avatar/Icon section -->
+                <div class="slds-media__figure">
+                    <span class="slds-avatar slds-avatar_profile-image-large slds-avatar_circle"></span>
+                </div>
+                <div class="slds-media__body slds-p-bottom_x-small">
+                    <!-- Comment header with name, timestamp, and actions -->
+                    <div class="slds-post__header">
+                        <div class="slds-grid slds-grid_align-spread">
+                            <div class="slds-col">
                                 <a onmouseover={handlePopOver}>{feed.feedItem.CreatedByName}</a>
                                 <div class="slds-text-body_small slds-text-color_weak">Today</div>
-                            </span>
-                        </lightning-layout-item>
-                    </lightning-layout>
-                    <!-- <template if:true={popOverVisible}>
-                        <section aria-label="Dialog title" 
-                                aria-describedby="popover-body-id" 
-                                class="slds-popover slds-nubbin_right" 
-                                role="dialog" 
-                                style="position: absolute; top: -10px; right: 105%; z-index: 9999; width: 320px;">
-                            <lightning-button-icon 
-                                icon-name="utility:close" 
-                                variant="bare" 
-                                size="small" 
-                                class="slds-float_right slds-popover__close" 
-                                alternative-text="Close dialog"
-                                title="Close dialog"
-                                onclick={handlePopOver}>
-                            </lightning-button-icon>
-                            <div id="popover-body-id" class="slds-popover__body">
-                                <p>Hey there! Here's the latest demo. let me know if there are any changes.</p>
                             </div>
-                        </section>
-                    </template> -->
-                </div>
-                <div class="slds-col" >
-                    <lightning-button-menu alternative-text="Action menu" menu-alignment="right" variant="container">
-                        <lightning-menu-item value="Edit" label="Edit" onclick={handleFeedAction}></lightning-menu-item>
-                        <lightning-menu-item value="Delete" label="Delete" onclick={handleFeedAction}></lightning-menu-item>
-                        <lightning-menu-item value="Bookmark" label="Bookmark" onclick={handleFeedAction}></lightning-menu-item>
-                    </lightning-button-menu>
+                            <div class="slds-col slds-grid_align-end">
+                                <lightning-button-menu alternative-text="Action menu" menu-alignment="right" variant="container">
+                                    <lightning-menu-item value="Edit" label="Edit" onclick={handleFeedAction}></lightning-menu-item>
+                                    <lightning-menu-item value="Delete" label="Delete" onclick={handleFeedAction}></lightning-menu-item>
+                                    <lightning-menu-item value="Bookmark" label="Bookmark" onclick={handleFeedAction}></lightning-menu-item>
+                                </lightning-button-menu>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
             <div class="slds-text-longform">
                 <lightning-formatted-rich-text value={feed.feedItem.Body}></lightning-formatted-rich-text>
             </div>
@@ -81,7 +84,7 @@
                             <div class="slds-media">
                                 <!-- Avatar/Icon section -->
                                 <div class="slds-media__figure">
-                                    <span class="slds-avatar slds-avatar_profile-image-large slds-avatar_circle" onmouseover={handlePopOver}></span>
+                                    <span class="slds-avatar slds-avatar_small slds-avatar_profile-image-large slds-avatar_circle" onmouseover={handlePopOver}></span>
                                 </div>
                                 
                                 <!-- Comment content section -->
@@ -124,13 +127,11 @@
                         </div>
                     </template>
                 </template>
-                <div class="slds-grid">
-                    <div class="slds-col slds-size_1-of-12">
-                        <span class="slds-avatar slds-avatar_profile-image-small slds-avatar_circle"></span>
-                    </div>
-                    <div class="slds-col slds-size_11-of-12">
-                        <c-post-component type={type} oncreatefeedcomment={handleCreateFeedComment}></c-post-component>
-                    </div>
+                <div class="slds-grid slds-container_fluid slds-grid_vertical-align-start">
+                     <span class="slds-avatar slds-avatar_small slds-avatar_profile-image-small slds-avatar_circle slds-m-right_small"></span>
+                     <span class="slds-grow slds-form-element">
+                         <c-post-component type={type} oncreatefeedcomment={handleCreateFeedComment}></c-post-component>
+                     </span>
                 </div>
             </div>
         </div>  
