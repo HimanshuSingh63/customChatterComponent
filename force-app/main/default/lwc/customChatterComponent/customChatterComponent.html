@@ -3,7 +3,7 @@
         <div class="slds-m-around_medium ">
             <lightning-tabset variant="scoped" class="tab-active" >
                 <lightning-tab label="Post">
-                    <c-post-component onclose={closeRichText} current-record-id={recordId} type={type}></c-post-component>
+                    <c-post-component onclose={closeRichText} current-record-id={recordId} type={type} placeholder="Share an update..." show-share=true></c-post-component>
                 </lightning-tab>
                 <lightning-tab label="Poll">
                     <c-poll-component></c-poll-component>

@@ -9,6 +9,13 @@ export default class PostComponent extends LightningElement {
     @track showRichText = false;
     @track richTextValue = '';
     @api type = '';
+    @api showShare = false;
+    
+    @api placeholder; // This will receive the placeholder text from parent
+
+    get inputPlaceholder() {
+        return this.placeholder || 'Share an update...'; 
+    }
 
     get isShareDisable() {
         // Remove HTML tags, decode HTML entities, and trim whitespace
@@ -27,11 +34,13 @@ export default class PostComponent extends LightningElement {
     }
     handleChange(e){
         this.richTextValue = e.target.value;
+        console.log('rich text value ', this.richTextValue);
+        
         const plainText = this.richTextValue
             ?.replace(/<[^>]*>/g, '') // Remove HTML tags
             ?.replace(/&nbsp;/g, ' ') // Replace &nbsp; with space
             ?.trim();
-        console.log('rich text value ', plainText);
+        console.log('palin text value ', plainText);
     }
     handleAddUser() {
         const inputRichText = this.template.querySelector(
@@ -44,6 +53,9 @@ export default class PostComponent extends LightningElement {
     handleAddEmoji(){
         console.log('add emoji clicked');
         
+    }
+    handleInputClick(){
+        this.showRichText = true;
     }
     handleShare(){
         console.log('share clicked currentRecordId ',this.currentRecordId,

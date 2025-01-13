@@ -1,10 +1,21 @@
 <template>
     <template if:false={showRichText}>
-        <lightning-input onclick={handleInputClick}
-            placeholder="Write a comment..."
-            value={inputValue}
-            variant="label-hidden">
-        </lightning-input>
+        <div class="slds-grid slds-container_fluid slds-grid_vertical-align-start">
+            <lightning-input onclick={handleInputClick}
+                placeholder={placeholder}
+                value={inputValue}
+                variant="label-hidden"
+                class="slds-grow">
+            </lightning-input>
+            <template if:true={showShare}>
+                <lightning-button 
+                    variant="Brand" 
+                    label="Share"
+                    class="slds-m-left_small"
+                    onclick={handleInputClick}>
+                </lightning-button>
+            </template>      
+        </div>
     </template>
 
     <template if:true={showRichText}>

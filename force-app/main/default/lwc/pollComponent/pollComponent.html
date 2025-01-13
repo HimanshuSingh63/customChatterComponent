@@ -10,24 +10,23 @@
                 value={question}
             ></lightning-textarea>
             <template for:each={options} for:item="option">
-                <div class="slds-grid slds-grid_vertical-align-center" key={option.id}>
-                    <div class="slds-col slds-size_10-of-12" >
-                        <lightning-input 
-                            data-id={option.id}
-                            name={option.label}
-                            label={option.label}
-                            value={option.value}
-                            onchange={handleOptionChange}
-                        ></lightning-input>
-                    </div>
-                    <div class="slds-col slds-size_2-of-12 slds-p-horizontal_large slds-p-top_large">
-                        <lightning-button-icon 
-                            data-id={option.id}
-                            class=""
-                            icon-name="utility:delete"  
-                            onclick={handleRemoveOption}>
-                        </lightning-button-icon>
-                    </div>
+                <div class="slds-grid slds-container_fluid slds-grid_vertical-align-end" key={option.id}>
+                    <lightning-input 
+                        data-id={option.id}
+                        name={option.label}
+                        label={option.label}
+                        class="slds-grow "
+                        value={option.value}
+                        onchange={handleOptionChange}
+                    ></lightning-input>
+                    
+                    <lightning-button-icon 
+                        data-id={option.id}
+                        class="slds-m-left_small"
+                        icon-name="utility:delete"  
+                        onclick={handleRemoveOption}>
+                    </lightning-button-icon>
+                    
                 </div>
             </template>
         </div>
