@@ -77,7 +77,7 @@
         </div>
         <!-- feed Comments -->
         <div class="slds-feed__item-comments">
-            <div class="slds-p-horizontal_medium slds-p-vertical_small">
+            <div class="slds-p-horizont  al_medium slds-p-vertical_small">
                 <template if:true={feed.feedItem.FeedComments}>
                     <template for:each={feed.feedItem.FeedComments} for:item="comment"> 
                         <div key={comment.Id} class="CommentBody" data-feeditemid={comment.FeedItemId} data-feed-comment-id={comment.Id}>
@@ -135,13 +135,12 @@
                 </div>
             </div>
         </div>  
+        
 
         <template if:true={showmodal}>
             <c-modal-component onclose={handleshowmodal} ondelete={handleshowmodal} message={messageForModal}></c-modal-component>
         </template>
-        <div class="Test">
-
-        </div>
+        
     </template>
 
         

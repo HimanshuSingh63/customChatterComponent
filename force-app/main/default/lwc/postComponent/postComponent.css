@@ -1,0 +1,9 @@
+.my-pill {
+    background-color: #014486;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.40);
+    color: aliceblue;
+    border:none;
+}
+.closeButton:hover{
+    cursor: pointer;
+}

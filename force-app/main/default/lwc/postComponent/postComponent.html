@@ -41,12 +41,13 @@
 
         <div class="slds-grid slds-grid_align-spread slds-m-vertical_small">
             <div class="slds-col">
-                    <lightning-icon 
-                        icon-name="utility:attach" 
-                        alternative-text="attach!" 
-                        title="attach"
-                        size="small"
-                    ></lightning-icon>
+                <!-- Parent component template -->
+                <c-file-uploader
+                    record-id={currentRecordId}
+                    onfileadded={handleFileAdded}
+                    onfileremoved={handleFileRemoved}
+                    onfilescleared={handleFilesCleared}>
+                </c-file-uploader>
             </div>
             
             <div class="slds-col">
@@ -74,5 +75,28 @@
         </div>
     </template>
 
+        <template for:each={uploadedFiles} for:item="file">
+            <div key={file.filename} class="slds-box slds-box_x-small my-pill slds-m-vertical_small">
+                <div class="slds-grid slds-grid_align-spread slds-wrap">
+                    <div class="slds-col">
+                        <div class="slds-grid slds-container_fluid slds-grid_vertical-align-center slds-wrap">
+                            <lightning-icon icon-name='doctype:image' alternative-text='image' size='Small' title='image'></lightning-icon>
+                            <span class="slds-grow slds-p-left_x-small">{file.filename}</span>
+                        </div> 
+                    </div>
+                    <div class="slds-col">
+                        <lightning-button-icon 
+                            icon-name="utility:close"  
+                            alternative-text="Settings" 
+                            title="Settings" 
+                            variant='bare-inverse' 
+                            onclick={handleRemoveFile}
+                            data-id={file.filename}>
+                        </lightning-button-icon>
+                        
+                    </div>
+                </div>
+            </div>        
+        </template>
         
 </template>

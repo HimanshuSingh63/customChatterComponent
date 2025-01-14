@@ -1,0 +1,28 @@
+<!-- fileUploader.html -->
+<template>
+    <div class="file-uploader-container">
+        <input 
+            type="file"
+            id="fileInput"
+            accept={acceptedFormats}
+            onchange={handleFileChange}
+            style="display:none;"
+            multiple
+        />
+        
+        <lightning-button-icon
+            icon-name="utility:attach"
+            variant="border-filled"
+            alternative-text="Attach Files"
+            title="Attach Files"
+            onclick={handleClick}
+            class="slds-p-around_xx-small"
+        ></lightning-button-icon>
+
+        <template if:true={isLoading}>
+            <div class="slds-is-relative slds-p-around_xx-small">
+                <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+            </div>
+        </template>
+    </div>
+</template>

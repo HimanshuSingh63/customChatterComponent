@@ -141,5 +141,39 @@ public with sharing class CustomChatterUtility {
             throw new AuraHandledException(e.getMessage());
         }
     }
+
+    @AuraEnabled
+    public static String uploadFiles(String fileData) {
+        try {
+            // Parse the file data
+            Map<String, Object> fileDataMap = (Map<String, Object>)JSON.deserializeUntyped(fileData);
+            String base64Data = (String)fileDataMap.get('base64');
+            String fileName = (String)fileDataMap.get('filename');
+            String recordId = (String)fileDataMap.get('recordId');
+            
+            // Create ContentVersion
+            ContentVersion cv = new ContentVersion();
+            cv.VersionData = EncodingUtil.base64Decode(base64Data);
+            cv.Title = fileName;
+            cv.PathOnClient = fileName;
+            insert cv;
+            
+            // Get Content Document Id
+            Id conDocId = [SELECT ContentDocumentId 
+                          FROM ContentVersion 
+                          WHERE Id = :cv.Id].ContentDocumentId;
+            
+            // Create ContentDocumentLink
+            ContentDocumentLink cdl = new ContentDocumentLink();
+            cdl.ContentDocumentId = conDocId;
+            cdl.LinkedEntityId = recordId;
+            cdl.ShareType = 'V';
+            insert cdl;
+            
+            return 'Success';
+        } catch (Exception ex) {
+            throw new AuraHandledException(ex.getMessage());
+        }
+    }
     
 }

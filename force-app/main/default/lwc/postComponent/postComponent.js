@@ -4,7 +4,7 @@ import createFeedItem from '@salesforce/apex/CustomChatterUtility.createFeedItem
 import { publish, MessageContext } from 'lightning/messageService';
 import CUSTOM_CHATTER_COMPONENT_CHANNEL from '@salesforce/messageChannel/Custom_Chatter_Component__c';
 export default class PostComponent extends LightningElement {
-    
+    uploadedFiles;
     @api currentRecordId;
     @track showRichText = false;
     @track richTextValue = '';
@@ -57,6 +57,9 @@ export default class PostComponent extends LightningElement {
     handleInputClick(){
         this.showRichText = true;
     }
+    handleFilesProcessed(){
+        console.log('files processed');
+    }
     handleShare(){
         console.log('share clicked currentRecordId ',this.currentRecordId,
             'richTextValue ',this.richTextValue,
@@ -98,5 +101,27 @@ export default class PostComponent extends LightningElement {
         });
         this.dispatchEvent(event);
     }
+    // Parent component handler
+    handleFileAdded(event) {
+        const { file, allFiles } = event.detail;
+        this.uploadedFiles=event.detail.allFiles;
+        console.log('New file added:', file.filename);
+        console.log('All files:', JSON.stringify(this.uploadedFile));
+        // Handle the file data as needed
+    }
 
-}
+    handleFileRemoved(event) {
+        const { filename, allFiles } = event.detail;
+        this.uploadedFiles = event.detail.allFiles;
+        console.log('File removed:', filename);
+        console.log('Remaining files:', allFiles);
+    }
+    handleRemoveFile(event){
+        console.log(event.target);
+        const fileName = event.target.dataset.id;
+        
+        console.log('clickied file name',fileName);
+        this.template.querySelector('c-file-uploader').removeFile(fileName);
+        // Handle the file data as needed
+    }
+}   
