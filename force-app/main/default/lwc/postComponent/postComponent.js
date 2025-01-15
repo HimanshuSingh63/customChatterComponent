@@ -106,7 +106,7 @@ export default class PostComponent extends LightningElement {
         const { file, allFiles } = event.detail;
         this.uploadedFiles=event.detail.allFiles;
         console.log('New file added:', file.filename);
-        console.log('All files:', JSON.stringify(this.uploadedFile));
+        console.log('All files:', this.uploadedFiles.length);
         // Handle the file data as needed
     }
 

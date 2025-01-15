@@ -57,6 +57,10 @@ export default class ChatterBodyComponent extends LightningElement {
         
 
     }
+    handlePreview(){
+        console.log('preview');
+        
+    }
     handleComment(){
         this.template.querySelector("c-post-component").handleInputClick();
     }
