@@ -56,6 +56,7 @@ public with sharing class CustomChatterUtility {
             feedItemWrapper.put('Id', feedItem.Id);
             feedItemWrapper.put('Body', feedItem.Body);
             feedItemWrapper.put('CreatedByName', feedItem.CreatedBy.Name);
+            feedItemWrapper.put('NameInitials', findInitials(feedItem.CreatedBy.Name));
             feedItemWrapper.put('ThreadLastUpdatedDate', feedItem.LastModifiedDate);
             feedItemWrapper.put('IsLiked', isLiked);
             feedItemWrapper.put('FeedComments', feedComments);
@@ -66,6 +67,20 @@ public with sharing class CustomChatterUtility {
             result.add(singleFeedItem);
         }
         return result;
+    }
+    public static string findInitials(String Name){
+        String initials;
+        String[] NameParts = Name.split(' ');
+
+        if(NameParts.size() > 0){
+            if (NameParts.size() >= 2){
+                initials = NameParts[0].substring(0,1)+NameParts[1].subString(0,1);
+            }else{
+                initials = NameParts[0].substring(0,1);
+            }
+        }
+        System.debug('initials'+initials);
+        return initials;
     }
     
     @AuraEnabled
