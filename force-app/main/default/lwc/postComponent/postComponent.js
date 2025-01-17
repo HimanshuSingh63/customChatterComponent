@@ -124,4 +124,4 @@ export default class PostComponent extends LightningElement {
         this.template.querySelector('c-file-uploader').removeFile(fileName);
         // Handle the file data as needed
     }
-}   
+}
