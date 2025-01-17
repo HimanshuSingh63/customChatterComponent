@@ -1,0 +1,3 @@
+<apex:page controller="SaveRTAImageController" action="{!saveImage}" contentType="text/plain">
+    {!result}
+</apex:page>
