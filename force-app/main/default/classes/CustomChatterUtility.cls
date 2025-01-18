@@ -191,4 +191,13 @@ public with sharing class CustomChatterUtility {
         }
     }
     
+    // method to get the base64 data for the file
+    @AuraEnabled
+    public static String saveRTAImage(String rtaUrl) {
+        String vfUrl = '/apex/SaveRTAImage?url=' + EncodingUtil.urlEncode(rtaUrl, 'UTF-8');
+        PageReference pageRef = new PageReference(vfUrl);
+        String result = pageRef.getContent().toString();
+        return result;
+    }
+    
 }
