@@ -109,9 +109,10 @@ export default class ChatterBodyComponent extends LightningElement {
             const feedItemElement = e.target.closest('[data-id]');
             const feedItemId = feedItemElement.dataset.id;
             console.log('Delete clicked feeditem id',feedItemId);
-            this.messageForModal.Title = "Post";
+            this.messageForModal.Title = "Delete Post";
             this.messageForModal.Body = "Deleting this item permanently removes it. We're just making sure that's what you want.";
             this.messageForModal.Id = feedItemId;
+            this.messageForModal.ButtonName = 'Delete';
             this.showmodal = true;
         }
     }
@@ -121,9 +122,10 @@ export default class ChatterBodyComponent extends LightningElement {
             const feedCommentElement = e.target.closest('[data-feed-comment-id]');
             const feedCommentId = feedCommentElement.dataset.feedCommentId;
             console.log('Delete clcked and feed comment id: ',feedCommentId);
-            this.messageForModal.Title = "Comment";
+            this.messageForModal.Title = "Delete Comment";
             this.messageForModal.Body = "Deleting this item permanently removes it. We're just making sure that's what you want.";
             this.messageForModal.Id = feedCommentId;
+            this.messageForModal.ButtonName = 'Delete';
             this.showmodal = true;
             console.log('this.showmodal',this.showmodal);
             
