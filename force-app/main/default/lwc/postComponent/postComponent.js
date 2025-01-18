@@ -10,8 +10,26 @@ export default class PostComponent extends LightningElement {
     @track richTextValue = '';
     @api type = '';
     @api showShare = false;
-    
     @api placeholder; // This will receive the placeholder text from parent
+
+    formats = [
+        'font',
+        'size',
+        'bold',
+        'italic',
+        'underline',
+        'strike',
+        'list',
+        'indent',
+        'align',
+        'link',
+        'clean',
+    ];
+
+
+    handleAddimage() {
+        console.log('Custom image upload triggered');
+    }
 
     get inputPlaceholder() {
         return this.placeholder || 'Share an update...'; 
