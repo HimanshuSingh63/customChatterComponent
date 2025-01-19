@@ -4,7 +4,7 @@
     <isExposed>true</isExposed>
     <description>Message Channel for Feed Refresh</description>
     <lightningMessageFields>
-        <fieldName>recordId</fieldName>
-        <description>Record ID</description>
+        <fieldName>action</fieldName>
+        <description>Type of action to perform</description>
     </lightningMessageFields>
 </LightningMessageChannel>

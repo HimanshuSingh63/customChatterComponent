@@ -1,0 +1,68 @@
+<template>
+    <template if:true={openFileUploader}>
+        <div class='slds-modal slds-fade-in-open' role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" name="Close" onclick={closeModal}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small"></lightning-icon>
+                    </button>
+                    <h2 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">Select Images</h2>
+                </header>
+                <div class="slds-modal__content" id="modal-content-id-2">
+                    <div class="slds-grid">
+                        <!-- Left Sidebar -->
+                        <div class="slds-col slds-size_4-of-12 slds-border_right">
+                            <nav class="slds-nav-vertical" aria-label="Sub page">
+                                <div class="slds-nav-vertical__section">
+                                <div id="entity-header" class="slds-m-vertical_medium slds-align_absolute-center">
+                                    <input 
+                                        type="file"
+                                        id="fileInput"
+                                        accept={acceptedFormats}
+                                        onchange={handleFileChange} 
+                                        style="display:none;"
+                                        multiple
+                                        name="Upload File"
+                                    />
+                                    <lightning-button label="Upload Files" title="Upload Files" icon-name="utility:upload" class="slds-m-left_x-small"></lightning-button>
+                                </div>   
+                                    <ul aria-describedby="entity-header">
+                                        <template for:each={navItems} for:item="item">
+                                            <li key={item.name} 
+                                                class={item.cssClass}
+                                                onclick={handleNavClick}
+                                                data-name={item.name}>
+                                                <a href="javascript:void(0);" class="slds-nav-vertical__action">{item.label}</a>
+                                            </li>
+                                        </template>
+                                    </ul>
+                                </div>
+                            </nav>
+                        </div>
+                        <!-- Main Content -->
+                        <div class="slds-col slds-size_8-of-12 slds-p-around_medium">
+                            <div class="slds-form-element">
+                                <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left">
+                                    <lightning-icon icon-name="utility:search" size="x-small" class="slds-icon slds-input__icon slds-input__icon_left"></lightning-icon>
+                                    <input type="text" class="slds-input" placeholder="Search Files..." />
+                                </div>
+                            </div>
+                            <!-- fileList.html -->
+                            <c-files-data-component files-data={files}></c-files-data-component>
+                            <!-- <div class="slds-m-top_large slds-align_absolute-center slds-text-color_weak">
+                                You don't have any images here. Try a different filter, or upload an image.
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick={closeModal}>Cancel</button>
+                    <button class="slds-button slds-button_brand" disabled>Insert</button>
+                   
+                </footer>
+            </div>
+        </div>
+        <div class='slds-backdrop slds-backdrop_open'></div>
+    </template>
+</template>
+  

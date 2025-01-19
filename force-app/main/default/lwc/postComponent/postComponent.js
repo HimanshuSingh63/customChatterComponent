@@ -9,8 +9,9 @@ export default class PostComponent extends LightningElement {
     @track showRichText = false;
     @track richTextValue = '';
     @api type = '';
-    @api showShare = false;
+    @api showShareButton = false;
     @api placeholder; // This will receive the placeholder text from parent
+    richTextValue = `<img src="/sfc/servlet.shepherd/version/download/069NS00000KFoiXYAT" alt="edf_logo">`;
 
     formats = [
         'font',
@@ -29,8 +30,11 @@ export default class PostComponent extends LightningElement {
 
     handleAddimage() {
         console.log('Custom image upload triggered');
+        this.template.querySelector('c-file-uploader-modal').handleOpenFileUploader();
     }
-
+    handleAttachFile(){
+        this.template.querySelector('c-file-uploader-modal').handleOpenFileUploader();  
+    }
     get inputPlaceholder() {
         return this.placeholder || 'Share an update...'; 
     }
@@ -50,6 +54,7 @@ export default class PostComponent extends LightningElement {
     @api handleInputClick() {
         this.showRichText = true;
     }
+    
     handleChange(e){
         this.richTextValue = e.target.value;
         console.log('rich text value ', this.richTextValue);

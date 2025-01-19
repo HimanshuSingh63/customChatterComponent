@@ -105,17 +105,16 @@ export default class CustomChatterComponent extends LightningElement {
 
     handleRefresh(){
         console.log('refresh clicked');
-        this.Searchterm = ''
-        this.isLoading = true;
-        return refreshApex(this.wiredFeedResults)
-            .then(() => {
-                this.isLoading = false;  
-            })
-            .catch(error => {
-                console.error('Error refreshing data:', error);
-                this.isLoading = false;  
-            });
+            this.Searchterm = ''
+            this.isLoading = true;
+            return refreshApex(this.wiredFeedResults)
+                .then(() => {
+                    this.isLoading = false;  
+                })
+                .catch(error => {
+                    console.error('Error refreshing data:', error);
+                    this.isLoading = false;  
+            }); 
+        }
+        
     }
-
-
-}

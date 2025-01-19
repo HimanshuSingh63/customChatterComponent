@@ -7,7 +7,7 @@
                 variant="label-hidden"
                 class="slds-grow">
             </lightning-input>
-            <template if:true={showShare}>
+            <template if:true={showShareButton}>
                 <lightning-button 
                     variant="Brand" 
                     label="Share"
@@ -47,13 +47,20 @@
 
         <div class="slds-grid slds-grid_align-spread slds-m-vertical_small">
             <div class="slds-col">
-                <!-- Parent component template -->
-                <c-file-uploader
+                <lightning-button-icon
+                icon-name="utility:attach"
+                variant="bare"
+                alternative-text="Attach Files"
+                title="Attach Files"
+                onclick={handleAttachFile}
+                class="slds-p-around_xx-small"
+            ></lightning-button-icon>
+                <!-- <c-file-uploader
                     record-id={currentRecordId}
                     onfileadded={handleFileAdded}
                     onfileremoved={handleFileRemoved}
                     onfilescleared={handleFilesCleared}>
-                </c-file-uploader>
+                </c-file-uploader> -->
             </div>
             
             <div class="slds-col">
@@ -104,5 +111,7 @@
                 </div>
             </div>        
         </template>
-        
+
+    <!-- File Uploader Modal Component -->
+            <c-file-uploader-modal></c-file-uploader-modal>
 </template>
