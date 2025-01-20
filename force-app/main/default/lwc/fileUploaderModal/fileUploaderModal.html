@@ -38,17 +38,19 @@
                                     </ul>
                                 </div>
                             </nav>
+                           
                         </div>
+                        
                         <!-- Main Content -->
-                        <div class="slds-col slds-size_8-of-12 slds-p-around_medium">
-                            <div class="slds-form-element">
+                        <div class="slds-col slds-size_8-of-12 ">
+                            <div class="slds-form-element slds-p-around_medium">
                                 <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left">
                                     <lightning-icon icon-name="utility:search" size="x-small" class="slds-icon slds-input__icon slds-input__icon_left"></lightning-icon>
                                     <input type="text" class="slds-input" placeholder="Search Files..." />
                                 </div>
                             </div>
                             <!-- fileList.html -->
-                            <c-files-data-component files-data={files}></c-files-data-component>
+                            <c-files-data-component files-data={files} onselectionchange={handleSelectionChange}></c-files-data-component>
                             <!-- <div class="slds-m-top_large slds-align_absolute-center slds-text-color_weak">
                                 You don't have any images here. Try a different filter, or upload an image.
                             </div> -->
@@ -56,8 +58,16 @@
                     </div>
                 </div>
                 <footer class="slds-modal__footer">
-                    <button class="slds-button slds-button_neutral" onclick={closeModal}>Cancel</button>
-                    <button class="slds-button slds-button_brand" disabled>Insert</button>
+                    <div class="slds-grid slds-grid_align-spread">
+                        <div class="slds-col">
+                            <span class="slds-text-title">{selectedFilesCount} items selected</span>
+                        </div>
+                        <div class="slds-col">
+                            <button class="slds-button slds-button_neutral" onclick={closeModal}>Cancel</button>
+                            <button class="slds-button slds-button_brand" disabled>Insert</button>
+                        </div>  
+                    </div>
+                    
                    
                 </footer>
             </div>
@@ -65,4 +75,3 @@
         <div class='slds-backdrop slds-backdrop_open'></div>
     </template>
 </template>
-  

@@ -1,35 +1,53 @@
-import { LightningElement,api,track } from 'lwc';
+import { LightningElement, api, track } from 'lwc';
 
 export default class FilesDataComponent extends LightningElement {
-    @api filesData;
+
     @track isSelected = false;
     @track showTooltip = false;
+    @track processedFiles = [];
+    @track selectedFilesCount = 0;
 
-    get buttonClass() {
-        return `slds-button ${this.isSelected ? 'slds-button_brand' : 'slds-button_neutral'}`;
+    @api
+    get filesData(){
+        return this.processedFiles;
     }
-
-    get iconName() {
-        return this.isSelected ? 'utility:check' : 'utility:add';
-    }
-
-    get iconVariant() {
-        return this.isSelected ? 'brand' : 'default';
-    }
-
-    handleClick() {
-        this.isSelected = !this.isSelected;
-    }
-    handleMouseOver() {
-        // Only show tooltip if text is truncated
-        const nameElement = this.template.querySelector('.slds-truncate');
-        if (nameElement.offsetWidth < nameElement.scrollWidth) {
-            this.showTooltip = true;
+    set filesData(value) {
+        if (value) {
+            this.processedFiles = value.map(file => ({
+                ...file,
+                selected: false,
+                buttonIconName: 'utility:add',
+                buttonIconVariant: 'border-filled'
+            }));
         }
     }
-    handleMouseLeave() {
-        this.showTooltip = false;
+
+    handleCheckboxChange(event) {
+        const fileId = event.currentTarget.dataset.id;
+        
+        this.processedFiles = this.processedFiles.map(file => {
+            if (file.id === fileId) {
+                const newSelected = !file.selected;
+                return {
+                    ...file,
+                    selected: newSelected,
+                    buttonIconName: newSelected ? 'utility:check' : 'utility:add',
+                    buttonIconVariant: newSelected ? 'brand' : 'border-filled'
+                };
+            }
+            return file;
+        });
+
+        // Update the count of selected files
+        // Update count and notify parent
+        this.selectedFilesCount = this.processedFiles.filter(file => file.selected).length;
+        console.log('selectedFilesCount: ' + this.selectedFilesCount);
+        
+        this.dispatchEvent(new CustomEvent('selectionchange', {
+            detail: {
+                selectedFiles: this.processedFiles.filter(file => file.selected),
+                selectedCount: this.selectedFilesCount
+            }
+        }));
     }
-
-
-}   
+}

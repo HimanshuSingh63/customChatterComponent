@@ -3,7 +3,9 @@ import { LightningElement,wire,api,track } from 'lwc';
 export default class FileUploaderModal extends LightningElement {
     openFileUploader = false;
     activeTab = 'Recent';
+    @track _selectedFilesCount = 0;
 
+    
     files = [
         {
             id: '1',
@@ -11,7 +13,7 @@ export default class FileUploaderModal extends LightningElement {
             date: '18-Jan-2025',
             size: '9KB',
             type: 'jpg',
-            iconName: 'doctype:image'
+            fileIconName: 'doctype:image'
         },
         {
             id: '2',
@@ -19,7 +21,7 @@ export default class FileUploaderModal extends LightningElement {
             date: '18-Jan-2025',
             size: '9KB',
             type: 'jpg',
-            iconName: 'doctype:image'
+            fileIconName: 'doctype:image'
         },
         {
             id: '3',
@@ -27,7 +29,7 @@ export default class FileUploaderModal extends LightningElement {
             date: '15-Jan-2025',
             size: '867KB',
             type: 'pdf',
-            iconName: 'doctype:pdf'
+            fileIconName: 'doctype:pdf'
         },
         {
             id: '4',
@@ -35,7 +37,7 @@ export default class FileUploaderModal extends LightningElement {
             date: '14-Jan-2025',
             size: '9KB',
             type: 'jpg',
-            iconName: 'doctype:image'
+            fileIconName: 'doctype:image'
         },
         {
             id: '5',
@@ -43,9 +45,10 @@ export default class FileUploaderModal extends LightningElement {
             date: '18-Dec-2024',
             size: '19KB',
             type: 'png',
-            iconName: 'doctype:image'
+            fileIconName: 'doctype:image'
         }
     ];
+
     @api
     handleOpenFileUploader() {
 
@@ -55,6 +58,16 @@ export default class FileUploaderModal extends LightningElement {
     closeModal(){
         this.openFileUploader = false;
     }
+    get selectedFilesCount() {
+        return this._selectedFilesCount;
+    }
+
+    handleSelectionChange(event) {
+        console.log('handleSelectionChange event:', event); // Updated log statement
+        this._selectedFilesCount = event.detail.selectedCount;
+        console.log(' this._selectedFilesCount'+ this._selectedFilesCount);
+    }
+
     get navItems() {
         return [
             { label: 'Recent', name: 'Recent' },

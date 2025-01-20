@@ -1,29 +1,42 @@
 <template>
     <div class="fileList">
         <ul class="slds-has-dividers_bottom">
-            <template for:each={filesData} for:item="file">
-                <li key={file.id} class="slds-item slds-p-vertical_x-small">
+            <template for:each={processedFiles} for:item="file">
+                <li key={file.id} class="slds-item slds-p-around_x-small">
                     <div class="slds-grid slds-grid_vertical-align-center">
                         <div class="slds-col slds-size_1-of-12">
-                            <lightning-button-icon icon-name={iconName} alternative-text={iconName} title={iconName} size="small" variant={iconVariant} onclick={handleClick}></lightning-button-icon>
+                            <lightning-button-icon 
+                                icon-name={file.buttonIconName}
+                                alternative-text="Select File"
+                                title="Select File"
+                                size="small"
+                                variant={file.buttonIconVariant}
+                                data-id={file.id}
+                                onclick={handleCheckboxChange}>
+                            </lightning-button-icon>
                         </div>
                         <div class="slds-col slds-size_1-of-12">
-                            <lightning-icon icon-name={file.iconName} 
+                            <lightning-icon icon-name={file.fileIconName} 
                                         size="small">
                             </lightning-icon>
                         </div>
                         <div class="slds-col slds-size_10-of-12">
                             <div class="slds-grid slds-wrap">
                                 <div class="slds-col slds-size_1-of-2">
-                                    <div class="slds-truncate">
+                                    <div class="slds-truncate" 
+                                         onmouseover={handleMouseOver}
+                                         onmouseleave={handleMouseLeave}>
                                         <a href="javascript:void(0);" 
-                                        onclick={handleClick}
-                                        data-id={file.id}
-                                        class="slds-text-color_blue">
-                                        {file.name}
-                                    </a>
+                                           data-id={file.id}
+                                           class="slds-text-color_blue">
+                                            {file.name}
+                                        </a>
+                                        <template if:true={showTooltip}>
+                                            <div class="slds-popover slds-popover_tooltip">
+                                                <div class="slds-popover__body">{file.name}</div>
+                                            </div>
+                                        </template>
                                     </div>
-                                    
                                     <div class="slds-text-body_small slds-text-color_weak slds-truncate"> 
                                         {file.date} • {file.size} • {file.type}
                                     </div>
