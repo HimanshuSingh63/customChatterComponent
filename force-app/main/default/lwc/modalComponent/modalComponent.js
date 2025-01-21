@@ -8,7 +8,9 @@ export default class ModalComponent extends LightningElement {
     }
 
     handleOnClick(event){
-        if(event.target.Name === 'Delete'){
+        console.log('handle on click in modal');
+        
+        if(event.target.value === 'Delete'){
             console.log('this.message',this.message.Id);
             if(this.message.Id){
                 deleteRecord({recordId:this.message.Id})
@@ -25,11 +27,12 @@ export default class ModalComponent extends LightningElement {
                     this.showtoast('Error',error.body.message,'error');
                 })
             }  
-        }else if (event.target.Name === 'Close') {
+        }else if (event.target.value === 'Close') {
+            
             this.dispatchEvent(new CustomEvent('close',{detail:
                 {buttonName: 'Close'}
             }));
-        }else if (event.target.Name === 'Cancel') {
+        }else if (event.target.value === 'Cancel') {
             this.dispatchEvent(new CustomEvent('close',{detail:
                 {buttonName: 'Cancel'}
             }));
