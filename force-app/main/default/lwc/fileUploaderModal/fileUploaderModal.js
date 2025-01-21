@@ -4,7 +4,7 @@ export default class FileUploaderModal extends LightningElement {
     openFileUploader = false;
     activeTab = 'Recent';
     @track _selectedFilesCount = 0;
-
+    @track selectedFiles = [];
     
     files = [
         {
@@ -49,25 +49,6 @@ export default class FileUploaderModal extends LightningElement {
         }
     ];
 
-    @api
-    handleOpenFileUploader() {
-
-        this.openFileUploader = true;
-        
-    }
-    closeModal(){
-        this.openFileUploader = false;
-    }
-    get selectedFilesCount() {
-        return this._selectedFilesCount;
-    }
-
-    handleSelectionChange(event) {
-        console.log('handleSelectionChange event:', event); // Updated log statement
-        this._selectedFilesCount = event.detail.selectedCount;
-        console.log(' this._selectedFilesCount'+ this._selectedFilesCount);
-    }
-
     get navItems() {
         return [
             { label: 'Recent', name: 'Recent' },
@@ -79,9 +60,43 @@ export default class FileUploaderModal extends LightningElement {
         }));
     }
 
+    @api
+    handleOpenFileUploader() {
+        this.openFileUploader = true;
+    }
+    closeModal(){
+        this.openFileUploader = false;
+    }
+
+    get selectedFilesCount() {
+        return this._selectedFilesCount;
+    }
+
+    get isInsertButtonDisabled() {
+        return this.selectedFilesCount === 0;
+    }
+
+    handleSelectionChange(event) {
+        const {selectedFiles,selectedCount} = event.detail;
+        this._selectedFilesCount = selectedCount;
+        this.selectedFiles = selectedFiles;
+    }
+
     handleNavClick(event) {
         this.activeTab = event.currentTarget.dataset.name;
     }
-   
-    
+
+    handleFilesInsert(){
+        this.dispatchEvent(new CustomEvent('insert', {
+            detail: {
+                selectedFiles: this.selectedFiles,
+                selectedCount: this._selectedFilesCount
+            }
+        }));
+        
+        this.openFileUploader = false
+        this._selectedFilesCount = 0;
+        this.selectedFiles = [];
+    }
+
 }

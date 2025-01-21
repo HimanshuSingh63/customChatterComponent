@@ -87,31 +87,30 @@
             </div>
         </div>
     </template>
-
+    <!-- Uploaded Files -->
         <template for:each={uploadedFiles} for:item="file">
-            <div key={file.filename} class="slds-box slds-box_x-small my-pill slds-m-vertical_small">
+            <div key={file.Id} class="slds-box slds-box_x-small my-pill slds-m-vertical_small">
                 <div class="slds-grid slds-grid_align-spread slds-wrap">
-                    <div class="slds-col">
-                        <div class="slds-grid slds-container_fluid slds-grid_vertical-align-center slds-wrap">
-                            <lightning-icon icon-name='doctype:image' alternative-text='image' size='Small' title='image'></lightning-icon>
-                            <span class="slds-grow slds-p-left_x-small">{file.filename}</span>
+                    <div class="slds-col slds-size_1-of-2">
+                        <div class="slds-grid slds-container_fluid slds-grid_vertical-align-center slds-truncate">
+                            <lightning-icon icon-name={file.fileIconName} alternative-text='image' size='Small' title='image'></lightning-icon>
+                            <span class="slds-grow slds-p-left_x-small ">{file.name} • {file.size}</span>
                         </div> 
                     </div>
                     <div class="slds-col">
                         <lightning-button-icon 
                             icon-name="utility:close"  
-                            alternative-text="Settings" 
-                            title="Settings" 
+                            alternative-text="close" 
+                            title="close" 
                             variant='bare-inverse' 
                             onclick={handleRemoveFile}
-                            data-id={file.filename}>
+                            data-id={file.id}>
                         </lightning-button-icon>
                         
                     </div>
                 </div>
             </div>        
         </template>
-
     <!-- File Uploader Modal Component -->
-            <c-file-uploader-modal></c-file-uploader-modal>
+        <c-file-uploader-modal oninsert={handleSelectedFiles}></c-file-uploader-modal>
 </template>

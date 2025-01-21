@@ -4,7 +4,7 @@ import createFeedItem from '@salesforce/apex/CustomChatterUtility.createFeedItem
 import { publish, MessageContext } from 'lightning/messageService';
 import CUSTOM_CHATTER_COMPONENT_CHANNEL from '@salesforce/messageChannel/Custom_Chatter_Component__c';
 export default class PostComponent extends LightningElement {
-    uploadedFiles;
+    @track uploadedFiles;
     @api currentRecordId;
     @track showRichText = false;
     @track richTextValue = '';
@@ -80,8 +80,18 @@ export default class PostComponent extends LightningElement {
     handleInputClick(){
         this.showRichText = true;
     }
-    handleFilesProcessed(){
-        console.log('files processed');
+    handleSelectedFiles(event) {
+        const { selectedFiles, selectedCount } = event.detail;
+        
+        // Create a new array combining existing and new files
+        const allFiles = [...(this.uploadedFiles || []), ...selectedFiles];
+        
+        // Remove duplicates based on file name and size
+        this.uploadedFiles = allFiles.filter((file, index, self) =>
+            index === self.findIndex((f) => (
+                f.name === file.name && f.size === file.size && f.id === file.id
+            ))
+        );
     }
     handleShare(){
         console.log('share clicked currentRecordId ',this.currentRecordId,
@@ -141,10 +151,7 @@ export default class PostComponent extends LightningElement {
     }
     handleRemoveFile(event){
         console.log(event.target);
-        const fileName = event.target.dataset.id;
-        
-        console.log('clickied file name',fileName);
-        this.template.querySelector('c-file-uploader').removeFile(fileName);
-        // Handle the file data as needed
+        const fileId = event.target.dataset.id;
+        this.uploadedFiles = this.uploadedFiles.filter(file => file.id !== fileId)
     }
 }
