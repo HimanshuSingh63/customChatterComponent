@@ -1,7 +1,5 @@
 public with sharing class CustomChatterUtility {
-    public CustomChatterUtility() {
 
-    }
     public Static Id currentUserId = UserInfo.getUserId();
     @AuraEnabled(cacheable=true)
     public static List<Map<String, Object>> getRelatedFeeds(Id targetObjectId) {
@@ -14,7 +12,9 @@ public with sharing class CustomChatterUtility {
                    (SELECT Id, InsertedById FROM FeedLikes)
             FROM FeedItem 
             WHERE ParentId = :targetObjectId
+            WITH USER_MODE
             ORDER BY CreatedDate DESC
+            LIMIT 49999
         ];
     
         // Result list to store formatted data
@@ -79,18 +79,24 @@ public with sharing class CustomChatterUtility {
                 initials = NameParts[0].substring(0,1);
             }
         }
-        System.debug('initials'+initials);
         return initials;
     }
     
     @AuraEnabled
     public static void createFeedItem(String Body,String ParentId){
         try {
+            if(!Schema.SObjectType.FeedItem.isCreateable() || 
+                !Schema.SObjectType.FeedItem.fields.Body.isCreateable() ||
+                !Schema.SObjectType.FeedItem.fields.ParentId.isCreateable() ||
+                !Schema.SObjectType.FeedItem.fields.IsRichText.isCreateable()){
+                throw new AuraHandledException('You do not have the necessary permissions to create a feed item');
+            }
             FeedItem post = new FeedItem();
             post.Body = Body;
             post.ParentId = ParentId;
             post.IsRichText = true;
-            insert post;
+            insert as user post;
+
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
@@ -99,10 +105,9 @@ public with sharing class CustomChatterUtility {
     @AuraEnabled
     public static void deleteRecord(String recordId) {
         try {
-            Id RecordIdTodelete = (Id)recordId;
-            Schema.SObjectType typeOfSobject = RecordIdTodelete.getSObjectType();
+            Id recordIdTodelete = (Id)recordId;
+            Schema.SObjectType typeOfSobject = recordIdTodelete.getSObjectType();
             String objectTypeName = String.valueOf(typeOfSobject);
-            System.debug('sObject Type is ' + objectTypeName);
                 
             // Check if the user has the necessary permissions to delete the feed item
             if (!typeOfSobject.getDescribe().isDeletable()) {
@@ -110,7 +115,7 @@ public with sharing class CustomChatterUtility {
             }
     
             // Delete the feed item
-            Database.DeleteResult result = Database.delete(RecordIdTodelete);
+            Database.DeleteResult result = Database.delete(recordIdTodelete);
             if (!result.isSuccess()) {
                 throw new AuraHandledException('Error deleting ' + objectTypeName + ': ' + result.getErrors()[0].getMessage());
             }
@@ -122,11 +127,17 @@ public with sharing class CustomChatterUtility {
     @AuraEnabled
     public static void createFeedComment(String CommentBody,String FeedItemId){
         try {
+            if( !Schema.SObjectType.FeedComment.isCreateable() ||
+                !Schema.SObjectType.FeedComment.fields.CommentBody.isCreateable() ||
+                !Schema.SObjectType.FeedComment.fields.FeedItemId.isCreateable() ||
+                !Schema.SObjectType.FeedComment.fields.IsRichText.isCreateable()){
+                throw new AuraHandledException('You do not have the necessary permissions to create a feed comment');
+            }
             FeedComment comment = new FeedComment();
             comment.CommentBody = CommentBody;
             comment.FeedItemId = FeedItemId;
             comment.IsRichText = true;
-            insert comment;
+            insert as user comment;
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
@@ -134,21 +145,28 @@ public with sharing class CustomChatterUtility {
     @AuraEnabled
     public static void manageLike(Boolean mark,String feedItemId){
         try {
-            System.debug('Called');
             if(feedItemId!=null){
                 if(mark){
+                    if( !Schema.SObjectType.FeedLike.isCreateable() || 
+                    !Schema.SObjectType.FeedLike.fields.FeedItemId.isCreateable() ||
+                    !Schema.SObjectType.FeedLike.fields.InsertedById.isCreateable()){
+                        throw new AuraHandledException('You do not have the necessary permissions to like this feed item');
+                    }
                     FeedLike likePost = new FeedLike();
                     likePost.FeedItemId = feedItemId;
-                    insert likePost;
+                    insert as user likePost;
                 }else{
                     FeedItem likePost = [SELECT Id,(SELECT Id,FeedItemId FROM FeedLikes 
                                                     WHERE FeedItemId=:feedItemId 
                                                     AND InsertedById=:currentUserId 
                                                     LIMIT 1) 
                                         FROM FeedItem 
-                                        WHERE Id=:feedItemId LIMIT 1];
+                                        WHERE Id=:feedItemId WITH USER_MODE LIMIT 1];
                     if(likePost.FeedLikes!=null && likePost.FeedLikes.size()>0){
-                        Delete likePost.FeedLikes[0];
+                        if(!Schema.SObjectType.FeedLike.isDeletable()){
+                            throw new AuraHandledException('You do not have the necessary permissions to unlike this feed item');
+                        }
+                        Delete as user likePost.FeedLikes[0];
                     }
                 }
             }
@@ -167,23 +185,36 @@ public with sharing class CustomChatterUtility {
             String recordId = (String)fileDataMap.get('recordId');
             
             // Create ContentVersion
+            
+            if(!Schema.SObjectType.ContentVersion.isCreateable() ||
+                !Schema.SObjectType.ContentVersion.fields.PathOnClient.isCreateable() ||
+                !Schema.SObjectType.ContentVersion.fields.Title.isCreateable() ||
+                !Schema.SObjectType.ContentVersion.fields.VersionData.isCreateable()){
+                throw new AuraHandledException('You do not have the necessary permissions to upload a file');
+            }
             ContentVersion cv = new ContentVersion();
             cv.VersionData = EncodingUtil.base64Decode(base64Data);
             cv.Title = fileName;
             cv.PathOnClient = fileName;
-            insert cv;
+            insert as user cv;
             
             // Get Content Document Id
             Id conDocId = [SELECT ContentDocumentId 
                           FROM ContentVersion 
-                          WHERE Id = :cv.Id].ContentDocumentId;
+                          WHERE Id = :cv.Id WITH USER_MODE LIMIT 1].ContentDocumentId;
             
+            if(!Schema.SObjectType.ContentDocumentLink.isCreateable() ||
+                !Schema.SObjectType.ContentDocumentLink.fields.ContentDocumentId.isCreateable() ||
+                !Schema.SObjectType.ContentDocumentLink.fields.LinkedEntityId.isCreateable() ||
+                !Schema.SObjectType.ContentDocumentLink.fields.ShareType.isCreateable()){
+                throw new AuraHandledException('You do not have the necessary permissions to share the file');
+            }
             // Create ContentDocumentLink
             ContentDocumentLink cdl = new ContentDocumentLink();
             cdl.ContentDocumentId = conDocId;
             cdl.LinkedEntityId = recordId;
             cdl.ShareType = 'V';
-            insert cdl;
+            insert as user cdl;
             
             return 'Success';
         } catch (Exception ex) {
