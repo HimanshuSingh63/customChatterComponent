@@ -4,6 +4,7 @@ import createFeedItem from '@salesforce/apex/CustomChatterUtility.createFeedItem
 import { publish, MessageContext } from 'lightning/messageService';
 import CUSTOM_CHATTER_COMPONENT_CHANNEL from '@salesforce/messageChannel/Custom_Chatter_Component__c';
 export default class PostComponent extends LightningElement {
+    openFileUploader = false;
     @track uploadedFiles;
     @api currentRecordId;
     @track showRichText = false;
@@ -33,7 +34,8 @@ export default class PostComponent extends LightningElement {
         this.template.querySelector('c-file-uploader-modal').handleOpenFileUploader();
     }
     handleAttachFile(){
-        this.template.querySelector('c-file-uploader-modal').handleOpenFileUploader();  
+        this.openFileUploader = true;
+        // this.template.querySelector('c-file-uploader-modal').handleOpenFileUploader();  
     }
     get inputPlaceholder() {
         return this.placeholder || 'Share an update...'; 
@@ -81,6 +83,7 @@ export default class PostComponent extends LightningElement {
         this.showRichText = true;
     }
     handleSelectedFiles(event) {
+        this.openFileUploader = false;
         const { selectedFiles, selectedCount } = event.detail;
         
         // Create a new array combining existing and new files
@@ -89,7 +92,7 @@ export default class PostComponent extends LightningElement {
         // Remove duplicates based on file name and size
         this.uploadedFiles = allFiles.filter((file, index, self) =>
             index === self.findIndex((f) => (
-                f.name === file.name && f.size === file.size && f.id === file.id
+                f.Name === file.Name && f.Size === file.Size && f.Id === file.Id
             ))
         );
     }
@@ -124,7 +127,9 @@ export default class PostComponent extends LightningElement {
     handleClose(){
         this.showRichText = false;
     }
-    
+    handleCloseFileModal(){
+        this.openFileUploader = false;
+    }
     showToast(title,variant,message){ 
         const event = new ShowToastEvent({
             title: title,
@@ -135,23 +140,27 @@ export default class PostComponent extends LightningElement {
         this.dispatchEvent(event);
     }
     // Parent component handler
-    handleFileAdded(event) {
-        const { file, allFiles } = event.detail;
-        this.uploadedFiles=event.detail.allFiles;
-        console.log('New file added:', file.filename);
-        console.log('All files:', this.uploadedFiles.length);
-        // Handle the file data as needed
-    }
+    // handleFileAdded(event) {
+    //     const { file, allFiles } = event.detail;
+    //     this.uploadedFiles=event.detail.allFiles;
+    //     console.log('New file added:', file.filename);
+    //     console.log('All files:', this.uploadedFiles.length);
+    //     // Handle the file data as needed
+    // }
 
-    handleFileRemoved(event) {
-        const { filename, allFiles } = event.detail;
-        this.uploadedFiles = event.detail.allFiles;
-        console.log('File removed:', filename);
-        console.log('Remaining files:', allFiles);
-    }
+    // handleFileRemoved(event) {
+    //     const { filename, allFiles } = event.detail;
+    //     this.uploadedFiles = event.detail.allFiles;
+    //     console.log('File removed:', filename);
+    //     console.log('Remaining files:', allFiles);
+    // }
     handleRemoveFile(event){
         console.log(event.target);
         const fileId = event.target.dataset.id;
-        this.uploadedFiles = this.uploadedFiles.filter(file => file.id !== fileId)
+        console.log('fileId out of filter', fileId);
+        
+        this.uploadedFiles = this.uploadedFiles.filter(file => 
+            file.Id !== fileId)
+        console.log('uploadedFiles ', JSON.stringify(this.uploadedFiles));
     }
 }
