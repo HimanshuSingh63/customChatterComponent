@@ -2,7 +2,7 @@
     <div class="fileList">
         <ul class="slds-has-dividers_bottom">
             <template for:each={processedFiles} for:item="file">
-                <li key={file.id} class="slds-item slds-p-around_x-small">
+                <li key={file.Id} class="slds-item slds-p-around_x-small">
                     <div class="slds-grid slds-grid_vertical-align-center">
                         <div class="slds-col slds-size_1-of-12">
                             <lightning-button-icon 
@@ -11,7 +11,7 @@
                                 title="Select File"
                                 size="small"
                                 variant={file.buttonIconVariant}
-                                data-id={file.id}
+                                data-id={file.Id}
                                 onclick={handleCheckboxChange}>
                             </lightning-button-icon>
                         </div>
@@ -22,23 +22,23 @@
                         </div>
                         <div class="slds-col slds-size_10-of-12">
                             <div class="slds-grid slds-wrap">
-                                <div class="slds-col slds-size_1-of-2">
+                                <div class="slds-col slds-size_2-of-2">
                                     <div class="slds-truncate" 
                                          onmouseover={handleMouseOver}
                                          onmouseleave={handleMouseLeave}>
                                         <a href="javascript:void(0);" 
-                                           data-id={file.id}
+                                           data-id={file.Id}
                                            class="slds-text-color_blue">
-                                            {file.name}
+                                            {file.Name}
                                         </a>
                                         <template if:true={showTooltip}>
                                             <div class="slds-popover slds-popover_tooltip">
-                                                <div class="slds-popover__body">{file.name}</div>
+                                                <div class="slds-popover__body">{file.Name}</div>
                                             </div>
                                         </template>
                                     </div>
-                                    <div class="slds-text-body_small slds-text-color_weak slds-truncate"> 
-                                        {file.date} • {file.size} • {file.type}
+                                    <div class="slds-text-body_small slds-text-color_weak slds-truncate">
+                                        <lightning-formatted-date-time value={file.Date}></lightning-formatted-date-time> • {file.Size} • {file.FileType}
                                     </div>
                                 </div>
                             </div>

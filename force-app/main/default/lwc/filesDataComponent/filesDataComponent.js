@@ -7,8 +7,14 @@ export default class FilesDataComponent extends LightningElement {
     @track processedFiles = [];
     @track selectedFilesCount = 0;
 
+    connectedCallback(){
+        console.log('filesDataComponent connectedCallback'+JSON.stringify(this.processedFiles));
+    }
+
     @api
     get filesData(){
+        console.log('filesData getter'+JSON.stringify(this.processedFiles));
+        
         return this.processedFiles;
     }
     set filesData(value) {
@@ -26,7 +32,7 @@ export default class FilesDataComponent extends LightningElement {
         const fileId = event.currentTarget.dataset.id;
         
         this.processedFiles = this.processedFiles.map(file => {
-            if (file.id === fileId) {
+            if (file.Id === fileId) {
                 const newSelected = !file.selected;
                 return {
                     ...file,

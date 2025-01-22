@@ -1,5 +1,5 @@
 <template>
-    <template if:true={openFileUploader}>
+    <!-- <template if:true={openFileUploader}> -->
         <div class='slds-modal slds-fade-in-open' role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
             <div class="slds-modal__container">
                 <header class="slds-modal__header">
@@ -50,7 +50,7 @@
                                 </div>
                             </div>
                             <!-- fileList.html -->
-                            <c-files-data-component files-data={files} onselectionchange={handleSelectionChange}></c-files-data-component>
+                            <c-files-data-component files-data={filesData} onselectionchange={handleSelectionChange}></c-files-data-component>
                             <!-- <div class="slds-m-top_large slds-align_absolute-center slds-text-color_weak">
                                 You don't have any images here. Try a different filter, or upload an image.
                             </div> -->
@@ -73,5 +73,5 @@
             </div>
         </div>
         <div class='slds-backdrop slds-backdrop_open'></div>
-    </template>
+    <!-- </template> -->
 </template>

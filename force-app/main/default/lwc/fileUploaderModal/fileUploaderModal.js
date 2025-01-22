@@ -1,53 +1,26 @@
 import { LightningElement,wire,api,track } from 'lwc';
+import getFiles from '@salesforce/apex/CustomChatterUtility.getFiles';
 
 export default class FileUploaderModal extends LightningElement {
     openFileUploader = false;
     activeTab = 'Recent';
     @track _selectedFilesCount = 0;
     @track selectedFiles = [];
-    
-    files = [
-        {
-            id: '1',
-            name: 'RTA_Image_173714496729',
-            date: '18-Jan-2025',
-            size: '9KB',
-            type: 'jpg',
-            fileIconName: 'doctype:image'
-        },
-        {
-            id: '2',
-            name: 'Low pixal',
-            date: '18-Jan-2025',
-            size: '9KB',
-            type: 'jpg',
-            fileIconName: 'doctype:image'
-        },
-        {
-            id: '3',
-            name: '2025_01_16 - Spring\'25 Flow Update - Keyboard Shortcnrkhnrkjnbfekvekjni io3i',
-            date: '15-Jan-2025',
-            size: '867KB',
-            type: 'pdf',
-            fileIconName: 'doctype:pdf'
-        },
-        {
-            id: '4',
-            name: 'Low pixal',
-            date: '14-Jan-2025',
-            size: '9KB',
-            type: 'jpg',
-            fileIconName: 'doctype:image'
-        },
-        {
-            id: '5',
-            name: 'edf_logo',
-            date: '18-Dec-2024',
-            size: '19KB',
-            type: 'png',
-            fileIconName: 'doctype:image'
+    wiredFilesResults;
+    @track filesData;
+
+    @wire(getFiles)
+    wiredFiles(result) {
+        this.wiredFilesResults = result;
+        const { data, error } = result;
+        if (data) {
+            this.filesData = data;
+            console.log('filesData', JSON.stringify(this.filesData));
         }
-    ];
+        if (error) {
+            console.log('error while getting files', error);
+        }
+    }
 
     get navItems() {
         return [
@@ -60,12 +33,8 @@ export default class FileUploaderModal extends LightningElement {
         }));
     }
 
-    @api
-    handleOpenFileUploader() {
-        this.openFileUploader = true;
-    }
     closeModal(){
-        this.openFileUploader = false;
+        this.dispatchEvent(new CustomEvent('close'));
     }
 
     get selectedFilesCount() {
@@ -94,7 +63,6 @@ export default class FileUploaderModal extends LightningElement {
             }
         }));
         
-        this.openFileUploader = false
         this._selectedFilesCount = 0;
         this.selectedFiles = [];
     }

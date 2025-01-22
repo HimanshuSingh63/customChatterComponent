@@ -231,4 +231,58 @@ public with sharing class CustomChatterUtility {
         return result;
     }
     
+    @AuraEnabled(cacheable=true)
+    public static List<Map<String, Object>> getFiles(){
+        List<Map<String, Object>> result = new List<Map<String, Object>>();
+
+        For(ContentDocumentLink link : [SELECT ContentDocumentId,ContentDocument.Title,ContentDocument.FileType,
+                                        ContentDocument.LatestPublishedVersionId,ContentDocument.OwnerId,
+                                        ShareType,ContentDocument.ContentModifiedDate,ContentDocument.ContentSize
+                                        FROM ContentDocumentLink 
+                                        WHERE LinkedEntityId = :currentUserId
+                                        WITH USER_MODE 
+                                        LIMIT 49999])
+        {
+            Map<String, Object> fileMap = new Map<String, Object>();
+            fileMap.put('Id',link.ContentDocument.LatestPublishedVersionId);
+            fileMap.put('Name',link.ContentDocument.Title);
+            fileMap.put('Date',link.ContentDocument.ContentModifiedDate);
+            fileMap.put('Size',formatFileSize(link.ContentDocument.ContentSize)); 
+            fileMap.put('FileType',link.ContentDocument.FileType);
+            fileMap.put('fileIconName',getFileIcon(link.ContentDocument.FileType));
+            fileMap.put('OwnerId',link.ContentDocument.OwnerId);
+            fileMap.put('ContentDocumentId',link.ContentDocumentId);
+            fileMap.put('ShareType',link.ShareType);
+            result.add(fileMap);
+        } 
+        return result;                                                
+    }
+
+    public static String formatFileSize(Long bytes) {
+        if (bytes < 1024) {
+            return bytes + ' bytes';
+        } else if (bytes < 1024 * 1024) {
+            // Convert to KB
+            Decimal kb = bytes / 1024.0;
+            return kb.setScale(2) + ' KB';
+        } else if (bytes < 1024 * 1024 * 1024) {
+            // Convert to MB
+            Decimal mb = bytes / (1024.0 * 1024.0);
+            return mb.setScale(2) + ' MB';
+        } else {
+            // Convert to GB
+            Decimal gb = bytes / (1024.0 * 1024.0 * 1024.0);
+            return gb.setScale(2) + ' GB';
+        }
+    }
+    
+    public static String getFileIcon(String fileType) {
+        if (fileType == 'JPG' || fileType == 'JPEG' || fileType == 'PNG' || fileType == 'GIF') {
+            return 'doctype:image';
+        } else if (fileType == 'PDF' ) {
+            return 'doctype:pdf';
+        }
+        return 'doctype:attachment';
+    }
+    
 }
