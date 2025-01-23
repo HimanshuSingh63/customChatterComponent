@@ -8,7 +8,7 @@
                     </button>
                     <h2 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">Select Images</h2>
                 </header>
-                <div class="slds-modal__content" id="modal-content-id-2">
+                <div class="slds-modal__content slds-scrollable_y" id="modal-content-id-2">
                     <div class="slds-grid">
                         <!-- Left Sidebar -->
                         <div class="slds-col slds-size_4-of-12 slds-border_right">
@@ -45,12 +45,22 @@
                         <div class="slds-col slds-size_8-of-12 ">
                             <div class="slds-form-element slds-p-around_medium">
                                 <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left">
-                                    <lightning-icon icon-name="utility:search" size="x-small" class="slds-icon slds-input__icon slds-input__icon_left"></lightning-icon>
-                                    <input type="text" class="slds-input" placeholder="Search Files..." />
+                                    <lightning-input
+                                        name="enter-search"
+                                        type="search"
+                                        variant="label-hidden"
+                                        placeholder="Search Files..."    
+                                        onchange={handleSearchFiles}
+                                    ></lightning-input>
                                 </div>
                             </div>
                             <!-- fileList.html -->
-                            <c-files-data-component files-data={filesData} onselectionchange={handleSelectionChange}></c-files-data-component>
+                            <c-files-data-component 
+                                files-data={filesData} 
+                                onselectionchange={handleSelectionChange} 
+                                property={property}
+                                selected-nav-item = {selectedNavItem}>
+                            </c-files-data-component>
                             <!-- <div class="slds-m-top_large slds-align_absolute-center slds-text-color_weak">
                                 You don't have any images here. Try a different filter, or upload an image.
                             </div> -->

@@ -8,6 +8,9 @@ export default class FileUploaderModal extends LightningElement {
     @track selectedFiles = [];
     wiredFilesResults;
     @track filesData;
+    @api property;
+    @track selectedNavItem = 'Recent';
+    
 
     @wire(getFiles)
     wiredFiles(result) {
@@ -22,6 +25,14 @@ export default class FileUploaderModal extends LightningElement {
         }
     }
 
+    get acceptedFormats(){
+        console.log('property',this.property);
+        if(this.property === 'Attach File'){
+            return ['.pdf', '.png', '.jpg', '.jpeg', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt'];
+        }else if(this.property === 'Add Image'){
+            return ['.png', '.jpg', '.jpeg'];
+        }
+    }
     get navItems() {
         return [
             { label: 'Recent', name: 'Recent' },
@@ -53,6 +64,9 @@ export default class FileUploaderModal extends LightningElement {
 
     handleNavClick(event) {
         this.activeTab = event.currentTarget.dataset.name;
+        this.selectedNavItem = this.activeTab;
+        console.log('selectedNavItem in parent',this.selectedNavItem);
+        
     }
 
     handleFilesInsert(){
@@ -66,5 +80,13 @@ export default class FileUploaderModal extends LightningElement {
         this._selectedFilesCount = 0;
         this.selectedFiles = [];
     }
+    handleSearchFiles(event){
+        const searchKey = event.target.value;
+        if(searchKey){
+            this.filesData = this.filesData.filter(file => file.Name.toLowerCase().includes(searchKey.toLowerCase()));
+        }else{
+            this.wiredFiles(this.wiredFilesResults);
+        }
 
+    }
 }

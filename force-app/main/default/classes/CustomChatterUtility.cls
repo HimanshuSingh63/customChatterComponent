@@ -246,7 +246,7 @@ public with sharing class CustomChatterUtility {
             Map<String, Object> fileMap = new Map<String, Object>();
             fileMap.put('Id',link.ContentDocument.LatestPublishedVersionId);
             fileMap.put('Name',link.ContentDocument.Title);
-            fileMap.put('Date',link.ContentDocument.ContentModifiedDate);
+            fileMap.put('Date',formateDate(link.ContentDocument.ContentModifiedDate));
             fileMap.put('Size',formatFileSize(link.ContentDocument.ContentSize)); 
             fileMap.put('FileType',link.ContentDocument.FileType);
             fileMap.put('fileIconName',getFileIcon(link.ContentDocument.FileType));
@@ -283,6 +283,9 @@ public with sharing class CustomChatterUtility {
             return 'doctype:pdf';
         }
         return 'doctype:attachment';
+    }
+    public static date formateDate (Datetime dateToFormat){
+        Return dateToFormat.date();
     }
     
 }

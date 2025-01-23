@@ -121,7 +121,7 @@
     </div>
     <!-- File Uploader Modal Component -->
      <template if:true={openFileUploader}>
-        <c-file-uploader-modal oninsert={handleSelectedFiles} onclose={handleCloseFileModal}></c-file-uploader-modal>
+        <c-file-uploader-modal oninsert={handleSelectedFiles} onclose={handleCloseFileModal} property={property}></c-file-uploader-modal>
      </template>
         
 </template>

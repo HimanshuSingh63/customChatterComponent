@@ -13,6 +13,7 @@ export default class PostComponent extends LightningElement {
     @api showShareButton = false;
     @api placeholder; // This will receive the placeholder text from parent
     richTextValue = `<img src="/sfc/servlet.shepherd/version/download/069NS00000KFoiXYAT" alt="edf_logo">`;
+    property;
 
     formats = [
         'font',
@@ -30,10 +31,13 @@ export default class PostComponent extends LightningElement {
 
 
     handleAddimage() {
-        console.log('Custom image upload triggered');
-        this.template.querySelector('c-file-uploader-modal').handleOpenFileUploader();
+        this.property = 'Add Image';
+        this.openFileUploader = true;
+        // console.log('Custom image upload triggered');
+        // this.template.querySelector('c-file-uploader-modal').handleOpenFileUploader();
     }
     handleAttachFile(){
+        this.property = 'Attach File';
         this.openFileUploader = true;
         // this.template.querySelector('c-file-uploader-modal').handleOpenFileUploader();  
     }
