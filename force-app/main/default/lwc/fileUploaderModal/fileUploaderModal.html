@@ -14,18 +14,25 @@
                         <div class="slds-col slds-size_4-of-12 slds-border_right">
                             <nav class="slds-nav-vertical" aria-label="Sub page">
                                 <div class="slds-nav-vertical__section">
-                                <div id="entity-header" class="slds-m-vertical_medium slds-align_absolute-center">
-                                    <input 
-                                        type="file"
-                                        id="fileInput"
-                                        accept={acceptedFormats}
-                                        onchange={handleFileChange} 
-                                        style="display:none;"
-                                        multiple
-                                        name="Upload File"
-                                    />
-                                    <lightning-button label="Upload Files" title="Upload Files" icon-name="utility:upload" class="slds-m-left_x-small"></lightning-button>
-                                </div>   
+                                    <div id="entity-header" class="slds-m-vertical_medium slds-align_absolute-center">
+                                        <input 
+                                            type="file"
+                                            class="fileInput"
+                                            accept={acceptedFormats}
+                                            onchange={handleFileChange} 
+                                            style="display:none;"
+                                            multiple
+                                            name="Upload File"
+                                        />
+                                        <lightning-button 
+                                            label="Upload Files" 
+                                            title="Upload Files" 
+                                            icon-name="utility:upload" 
+                                            class="slds-m-left_x-small"
+                                            onclick={openFileInput}
+                                        ></lightning-button>
+                                    
+                                    </div>
                                     <ul aria-describedby="entity-header">
                                         <template for:each={navItems} for:item="item">
                                             <li key={item.name} 

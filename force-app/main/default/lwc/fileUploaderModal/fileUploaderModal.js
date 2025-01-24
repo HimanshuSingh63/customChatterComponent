@@ -89,4 +89,16 @@ export default class FileUploaderModal extends LightningElement {
         }
 
     }
+    openFileInput() {
+        const fileInput = this.template.querySelector('.fileInput');
+        console.log('fileInput',fileInput);
+        
+        fileInput.click();
+    }
+
+    handleFileChange(event) {
+        const files = event.target.files;
+        // Handle file upload logic here
+    }
+    
 }
