@@ -10,17 +10,22 @@ export default class FileUploaderModal extends LightningElement {
     @track filesData;
     @api property;
     @track selectedNavItem = 'Recent';
+    showUploadFileProgress = false;
+    isLoading = false;
     
 
     @wire(getFiles)
     wiredFiles(result) {
+        this.isLoading = true;
         this.wiredFilesResults = result;
         const { data, error } = result;
         if (data) {
+            this.isLoading = false;
             this.filesData = data;
             console.log('filesData', JSON.stringify(this.filesData));
         }
         if (error) {
+            this.isLoading = false;
             console.log('error while getting files', error);
         }
     }
@@ -88,17 +93,6 @@ export default class FileUploaderModal extends LightningElement {
             this.wiredFiles(this.wiredFilesResults);
         }
 
-    }
-    openFileInput() {
-        const fileInput = this.template.querySelector('.fileInput');
-        console.log('fileInput',fileInput);
-        
-        fileInput.click();
-    }
-
-    handleFileChange(event) {
-        const files = event.target.files;
-        // Handle file upload logic here
     }
     
 }

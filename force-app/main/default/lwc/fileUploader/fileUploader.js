@@ -5,103 +5,150 @@ export default class FileUploader extends LightningElement {
     @api recordId;
     @track isLoading = false;
     @track uploadedFiles = []; // To keep track of all uploaded files
+    @api property;
 
-    get acceptedFormats() {
-        return '.pdf,.png,.jpg,.jpeg';
+    connectedCallback(){
+        console.log('recordId',this.recordId,'property',this.property);
     }
 
-    handleClick(event) {
-        event.preventDefault();
-        event.stopPropagation();
-        
-        const fileInput = this.template.querySelector('input[type="file"]');
-        if (fileInput) {
-            fileInput.click();
+    get acceptedFormats(){
+        console.log('property',this.property);
+        if(this.property === 'Attach File'){
+            return ['.pdf', '.png', '.jpg', '.jpeg', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt'];
+        }else if(this.property === 'Add Image'){
+            return ['.png', '.jpg', '.jpeg'];
         }
     }
 
-    handleFileChange(event) {
+    openFileInput() {
+        const fileInput = this.template.querySelector('.fileInput');
+        console.log('fileInput called',fileInput);
+        fileInput.click();
+    }
+
+
+    // handleFileChange(event) {
+    //     try {
+    //         const files = event.target.files;
+    //         if (!files || files.length === 0) return;
+            
+    //         this.isLoading = true;
+    //         console.log('Files selected:', files.length);
+
+    //         [...files].forEach(file => {
+    //             // Check if file already exists
+    //             const fileExists = this.uploadedFiles.some(f => 
+    //                 f.filename === file.name && 
+    //                 f.size === file.size
+    //             );
+
+    //             if (fileExists) {
+    //                 console.log('File already exists:', file.name);
+    //                 return; // Skip this file
+    //             }
+
+    //             console.log('Processing file:', file.name);
+    //             const reader = new FileReader();
+
+    //             reader.onload = (() => {
+    //                 return (e) => {
+    //                     try {
+    //                         console.log('File read successfully');
+    //                         const base64 = e.target.result.split(',')[1];
+                            
+    //                         const fileData = {
+    //                             filename: file.name,
+    //                             // base64: base64,
+    //                             type: file.type,
+    //                             size: file.size,
+    //                             uploadedDate: new Date().toLocaleString()
+    //                         };
+
+    //                         // Add to uploaded files array
+    //                         this.uploadedFiles = [...this.uploadedFiles, fileData];
+    //                         console.log('Updated uploadedFiles:', JSON.stringify(this.uploadedFiles));
+
+    //                     } catch (error) {
+    //                         console.error('Error in onload:', error);
+    //                     }
+    //                 };
+    //             })();
+
+    //             reader.onerror = (() => {
+    //                 return (error) => {
+    //                     console.error('Error reading file:', error);
+    //                     this.isLoading = false;
+    //                 };
+    //             })();
+
+    //             // Read the file
+    //             try {
+    //                 reader.readAsDataURL(file);
+    //             } catch (error) {
+    //                 console.error('Error in readAsDataURL:', error);
+    //             }
+    //         });
+            
+    //         event.target.value = '';
+    //         this.isLoading = false;
+            
+    //     } catch (error) {
+    //         console.error('Main error handler:', error);
+    //         this.isLoading = false;
+    //     }
+    // }
+
+    // Method to remove a file
+    async handleFileChange(event) {
         try {
             const files = event.target.files;
             if (!files || files.length === 0) return;
             
             this.isLoading = true;
-            console.log('Files selected:', files.length);
-
-            [...files].forEach(file => {
-                // Check if file already exists
-                const fileExists = this.uploadedFiles.some(f => 
-                    f.filename === file.name && 
-                    f.size === file.size
-                );
-
-                if (fileExists) {
-                    console.log('File already exists:', file.name);
-                    return; // Skip this file
+            const processedFiles = [];
+    
+            for (const file of Array.from(files)) {
+                const fileData = await this.processFile(file);
+                if (fileData) {
+                    processedFiles.push(fileData);
                 }
-
-                console.log('Processing file:', file.name);
-                const reader = new FileReader();
-
-                reader.onload = (() => {
-                    return (e) => {
-                        try {
-                            console.log('File read successfully');
-                            const base64 = e.target.result.split(',')[1];
-                            
-                            const fileData = {
-                                filename: file.name,
-                                base64: base64,
-                                recordId: this.recordId,
-                                type: file.type,
-                                size: file.size,
-                                uploadedDate: new Date().toLocaleString()
-                            };
-
-                            // Add to uploaded files array
-                            this.uploadedFiles = [...this.uploadedFiles, fileData];
-
-                            // Dispatch event for the new file
-                            this.dispatchEvent(new CustomEvent('fileadded', {
-                                detail: {
-                                    file: fileData,
-                                    allFiles: this.uploadedFiles
-                                }
-                            }));
-
-                        } catch (error) {
-                            console.error('Error in onload:', error);
-                        }
-                    };
-                })();
-
-                reader.onerror = (() => {
-                    return (error) => {
-                        console.error('Error reading file:', error);
-                        this.isLoading = false;
-                    };
-                })();
-
-                // Read the file
-                try {
-                    reader.readAsDataURL(file);
-                } catch (error) {
-                    console.error('Error in readAsDataURL:', error);
-                }
-            });
-
-            // Reset input
-            event.target.value = '';
-            this.isLoading = false;
-            console.log('updated files'+this.uploadedFiles);
+            }
+    
+            this.uploadedFiles = [...this.uploadedFiles, ...processedFiles];
+            console.log('All files processed:', this.uploadedFiles.length);
             
+            if (this.uploadedFiles.length > 0) {
+            console.log('call apex');
+                
+            }
+    
         } catch (error) {
-            console.error('Main error handler:', error);
+            console.error('Error:', error);
+        } finally {
             this.isLoading = false;
         }
     }
+    
+    processFile(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                const base64 = e.target.result.split(',')[1];
+                resolve({
+                    filename: file.name,
+                    base64: base64,
+                    type: file.type,
+                    size: file.size,
+                    uploadedDate: new Date().toLocaleString()
+                });
+            };
+            
+            reader.onerror = () => reject(new Error('File reading failed'));
+            reader.readAsDataURL(file);
+        });
+    }
 
-    // Method to remove a file
     @api
     removeFile(filename) {
         this.uploadedFiles = this.uploadedFiles.filter(file => file.filename !== filename);
