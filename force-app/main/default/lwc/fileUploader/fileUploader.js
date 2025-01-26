@@ -1,11 +1,17 @@
 // fileUploader.js
-import { LightningElement, api, track } from 'lwc';
+import { LightningElement, api, track,wire } from 'lwc';
+import { publish, MessageContext } from 'lightning/messageService';
+import CUSTOM_CHATTER_COMPONENT_CHANNEL from '@salesforce/messageChannel/Custom_Chatter_Component__c';
+import saveFiles from '@salesforce/apex/CustomChatterUtility.saveFiles';
 
 export default class FileUploader extends LightningElement {
     @api recordId;
     @track isLoading = false;
     @track uploadedFiles = []; // To keep track of all uploaded files
     @api property;
+
+    @wire(MessageContext)
+    messageContext;
 
     connectedCallback(){
         console.log('recordId',this.recordId,'property',this.property);
@@ -118,7 +124,15 @@ export default class FileUploader extends LightningElement {
             console.log('All files processed:', this.uploadedFiles.length);
             
             if (this.uploadedFiles.length > 0) {
-            console.log('call apex');
+                // Call apex to save files in database
+                this.saveFiles();
+                const data = {
+                    detail: {
+                        type: 'File',
+                        data: this.uploadedFiles
+                    }
+                }
+                publish(this.messageContext, CUSTOM_CHATTER_COMPONENT_CHANNEL, data);
                 
             }
     
@@ -136,9 +150,9 @@ export default class FileUploader extends LightningElement {
             reader.onload = (e) => {
                 const base64 = e.target.result.split(',')[1];
                 resolve({
-                    filename: file.name,
+                    fileName: file.name,
                     base64: base64,
-                    type: file.type,
+                    type: file.type,    
                     size: file.size,
                     uploadedDate: new Date().toLocaleString()
                 });
@@ -150,13 +164,13 @@ export default class FileUploader extends LightningElement {
     }
 
     @api
-    removeFile(filename) {
-        this.uploadedFiles = this.uploadedFiles.filter(file => file.filename !== filename);
+    removeFile(fileName) {
+        this.uploadedFiles = this.uploadedFiles.filter(file => file.fileName !== fileName);
         
         // Dispatch event for file removal
         this.dispatchEvent(new CustomEvent('fileremoved', {
             detail: {
-                filename: filename,
+                fileName: fileName,
                 allFiles: this.uploadedFiles
             }
         }));
@@ -173,5 +187,25 @@ export default class FileUploader extends LightningElement {
     @api
     get currentFiles() {
         return this.uploadedFiles;
+    }
+
+    saveFiles() {
+        console.log('saveFiles called');
+        if (this.uploadedFiles.length > 0) {
+            console.log('Files to save:', this.uploadedFiles.length);
+            const filesData = JSON.stringify(this.uploadedFiles);
+            
+            saveFiles({ filesData: filesData })
+                .then(result => {
+                    console.log('Files saved successfully:', JSON.stringify(result));
+                    // Dispatch success event or handle success
+                })
+                .catch(error => {
+                    console.error('Error saving files:', error);
+                    // Handle error appropriately
+                });
+        } else {
+            console.log('No files to save');
+        }
     }
 }

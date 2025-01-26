@@ -1,7 +1,7 @@
 import { LightningElement,track,api,wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import createFeedItem from '@salesforce/apex/CustomChatterUtility.createFeedItem';
-import { publish, MessageContext } from 'lightning/messageService';
+import { publish, MessageContext,subscribe } from 'lightning/messageService';
 import CUSTOM_CHATTER_COMPONENT_CHANNEL from '@salesforce/messageChannel/Custom_Chatter_Component__c';
 export default class PostComponent extends LightningElement {
     openFileUploader = false;
@@ -29,7 +29,15 @@ export default class PostComponent extends LightningElement {
         'clean',
     ];
 
+    connectedCallback(){
+        subscribe(this.messageContext, CUSTOM_CHATTER_COMPONENT_CHANNEL, (message) => {
+            console.log('message received :', JSON.stringify(message));
+            if(message && message?.detail?.type === 'File'){
+                this.handleSelectedFiles(message);
+            }
 
+        });
+    }
     handleAddimage() {
         this.property = 'Add Image';
         this.openFileUploader = true;
@@ -87,9 +95,11 @@ export default class PostComponent extends LightningElement {
         this.showRichText = true;
     }
     handleSelectedFiles(event) {
-        this.openFileUploader = false;
-        const { selectedFiles, selectedCount } = event.detail;
+        console.log('event.detail ', JSON.stringify(event.detail));
         
+        this.openFileUploader = false;
+        const { type, data } = event.detail;
+        const selectedFiles = data;
         // Create a new array combining existing and new files
         const allFiles = [...(this.uploadedFiles || []), ...selectedFiles];
         
@@ -111,7 +121,11 @@ export default class PostComponent extends LightningElement {
                     .then(result=>{
                         console.log('result ', result);
                         this.showToast('Success','success','Post shared successfully');
-                        publish(this.messageContext, CUSTOM_CHATTER_COMPONENT_CHANNEL, {});
+                        const message = {
+                            type: 'Refresh',
+                            data: ''
+                        }
+                        publish(this.messageContext, CUSTOM_CHATTER_COMPONENT_CHANNEL,message);
                     })
                     .catch(error=>{
                         console.log('error ',error.body.message);

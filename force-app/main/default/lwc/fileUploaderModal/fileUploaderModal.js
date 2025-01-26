@@ -77,8 +77,8 @@ export default class FileUploaderModal extends LightningElement {
     handleFilesInsert(){
         this.dispatchEvent(new CustomEvent('insert', {
             detail: {
-                selectedFiles: this.selectedFiles,
-                selectedCount: this._selectedFilesCount
+                type: 'Files',
+                data: this.selectedFiles,
             }
         }));
         

@@ -26,7 +26,13 @@ export default class CustomChatterComponent extends LightningElement {
         this.subscription = subscribe(
             this.messageContext,
             CUSTOM_CHATTER_COMPONENT_CHANNEL,
-            () => this.handleRefresh()
+            (message) => {
+                console.log('message:'+JSON.stringify(message));
+                
+                if (message && message.type === 'Refresh') {
+                    this.handleRefresh();
+                }
+            }
         );
     }
 

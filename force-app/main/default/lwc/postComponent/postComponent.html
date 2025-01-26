@@ -88,7 +88,7 @@
         </div>
     </template>
     
-    <!-- Uploaded Files -->
+    <!-- Uploaded Files Tiles-->
     <div class="slds-grid slds-wrap slds-gutters_xx-small">
         <template for:each={uploadedFiles} for:item="file">
             <div key={file.Id} class="slds-col slds-large-size_4-of-12 slds-medium-size_6-of-12 slds-size_12-of-12 slds-p-around_xx-small">
@@ -119,6 +119,7 @@
             </div>   
         </template>
     </div>
+
     <!-- File Uploader Modal Component -->
      <template if:true={openFileUploader}>
         <c-file-uploader-modal oninsert={handleSelectedFiles} onclose={handleCloseFileModal} property={property}></c-file-uploader-modal>

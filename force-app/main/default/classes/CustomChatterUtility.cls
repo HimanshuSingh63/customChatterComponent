@@ -232,30 +232,36 @@ public with sharing class CustomChatterUtility {
     }
     
     @AuraEnabled(cacheable=true)
-    public static List<Map<String, Object>> getFiles(){
+    public static List<Map<String, Object>> getFiles() {
         List<Map<String, Object>> result = new List<Map<String, Object>>();
 
-        For(ContentDocumentLink link : [SELECT ContentDocumentId,ContentDocument.Title,ContentDocument.FileType,
-                                        ContentDocument.LatestPublishedVersionId,ContentDocument.OwnerId,
-                                        ShareType,ContentDocument.ContentModifiedDate,ContentDocument.ContentSize
-                                        FROM ContentDocumentLink 
-                                        WHERE LinkedEntityId = :currentUserId
-                                        WITH USER_MODE 
-                                        LIMIT 49999])
-        {
-            Map<String, Object> fileMap = new Map<String, Object>();
-            fileMap.put('Id',link.ContentDocument.LatestPublishedVersionId);
-            fileMap.put('Name',link.ContentDocument.Title);
-            fileMap.put('Date',formateDate(link.ContentDocument.ContentModifiedDate));
-            fileMap.put('Size',formatFileSize(link.ContentDocument.ContentSize)); 
-            fileMap.put('FileType',link.ContentDocument.FileType);
-            fileMap.put('fileIconName',getFileIcon(link.ContentDocument.FileType));
-            fileMap.put('OwnerId',link.ContentDocument.OwnerId);
-            fileMap.put('ContentDocumentId',link.ContentDocumentId);
-            fileMap.put('ShareType',link.ShareType);
-            result.add(fileMap);
+        for (ContentDocumentLink link : [
+            SELECT ContentDocumentId, ContentDocument.Title, ContentDocument.FileType,
+                   ContentDocument.LatestPublishedVersionId, ContentDocument.OwnerId,
+                   ShareType, ContentDocument.ContentModifiedDate, ContentDocument.ContentSize
+            FROM ContentDocumentLink 
+            WHERE LinkedEntityId = :currentUserId
+            WITH USER_MODE 
+            LIMIT 49999
+        ]) {
+            result.add(createFileMap(link));
         } 
         return result;                                                
+    }
+
+     // Dynamic method to create file map with flexible key mapping
+    public static Map<String, Object> createFileMap(ContentDocumentLink link) {
+        return new Map<String, Object>{
+            'Id' => link.ContentDocument.LatestPublishedVersionId,
+            'Name' => link.ContentDocument.Title,
+            'Date' => formateDate(link.ContentDocument.ContentModifiedDate),
+            'Size' => formatFileSize(link.ContentDocument.ContentSize),
+            'FileType' => link.ContentDocument.FileType,
+            'fileIconName' => getFileIcon(link.ContentDocument.FileType),
+            'OwnerId' => link.ContentDocument.OwnerId,
+            'ContentDocumentId' => link.ContentDocumentId,
+            'ShareType' => link.ShareType
+        };
     }
 
     public static String formatFileSize(Long bytes) {
@@ -284,8 +290,121 @@ public with sharing class CustomChatterUtility {
         }
         return 'doctype:attachment';
     }
+
     public static date formateDate (Datetime dateToFormat){
         Return dateToFormat.date();
+    }
+
+    @AuraEnabled
+    public static List<Map<String, Object>> saveFiles(String filesData) {
+        try {
+            List<Object> parsedList = (List<Object>) JSON.deserializeUntyped(filesData);
+            List<ContentVersion> cvList = new List<ContentVersion>();
+            
+            for (Object obj : parsedList) {
+                Map<String, Object> fileMap = (Map<String, Object>) obj;
+                ContentVersion cv = createContentVersion(fileMap);
+                if (cv != null) {
+                    cvList.add(cv);
+                }
+            }
+            
+            if (!cvList.isEmpty()) {
+                insert as user cvList;
+                List<Map<String, Object>> result = getinsertedFiles(cvList);
+                System.debug('Successfully inserted ' + cvList.size());
+                return result;
+            }
+            
+            return new List<Map<String, Object>>();
+            
+        } catch (Exception e) {
+            System.debug('Error in saveFiles: ' + e.getMessage());
+            throw new AuraHandledException('File upload failed: ' + e.getMessage());
+        }
+    }
+    
+    private static ContentVersion createContentVersion(Map<String, Object> fileMap) {
+        try {
+            String fileName = (String) fileMap.get('fileName');
+            String fileType = (String) fileMap.get('type');
+            String base64 = (String) fileMap.get('base64');
+            
+            // Validate input
+            if (String.isBlank(fileName) || String.isBlank(fileType) || String.isBlank(base64)) {
+                System.debug('Invalid file data: Missing required fields');
+                return null;
+            }
+            
+            ContentVersion cv = new ContentVersion();
+            cv.Title = fileName;
+            cv.PathOnClient = fileName + '.' + extractFileExtension(fileType);
+            cv.VersionData = convertBase64ToBlob(base64);
+            cv.Origin = 'H';
+            
+            return cv;
+        } catch (Exception e) {
+            System.debug('Error creating ContentVersion: ' + e.getMessage());
+            return null;
+        }
+    }
+    
+    private static Blob convertBase64ToBlob(String base64String) {
+             // Remove any data URL prefix if present (e.g., "data:image/png;base64,")
+        System.debug('Base64 String: ' + base64String);
+        if (base64String.contains(',')) {
+            base64String = base64String.substringAfter(',');
+        }
+
+        // Convert Base64 string to Blob
+        Blob resultBlob = EncodingUtil.base64Decode(base64String);
+        return resultBlob;
+    }
+    
+    private static String extractFileExtension(String fileType) {
+        return fileType.contains('/') ? fileType.substringAfter('/') : fileType;
+    }
+
+    private static List<Map<String, Object>> getinsertedFiles(List<ContentVersion> cvList) {
+        Set<Id> contentDocIds = new Set<Id>();
+        List<Map<String, Object>> fileMapList = new List<Map<String, Object>>();
+        
+        // Get ContentDocument Ids from ContentVersions
+        for (ContentVersion cv : cvList) {
+            if(cv.ContentDocumentId != null) {
+                contentDocIds.add(cv.ContentDocumentId);
+            }
+        }
+    
+        if (!contentDocIds.isEmpty()) {
+            for (ContentDocument cd : [SELECT Id, Title, FileType, 
+                                     LatestPublishedVersionId, OwnerId,
+                                     ContentModifiedDate, ContentSize 
+                                     FROM ContentDocument 
+                                     WHERE Id IN :contentDocIds 
+                                     WITH USER_MODE 
+                                     LIMIT 49999]) {
+                                         
+                fileMapList.add(returnFileMap(cd));
+            
+            }
+        }
+        
+        return fileMapList;
+    }
+
+    private static Map<String, Object> returnFileMap(ContentDocument cd) {
+        
+        return new Map<String, Object>{
+            'Id' => cd.LatestPublishedVersionId,
+            'Name' => cd.Title,
+            'Date' => formateDate(cd.ContentModifiedDate),
+            'Size' => formatFileSize(cd.ContentSize),
+            'FileType' => cd.FileType,
+            'fileIconName' => getFileIcon(cd.FileType),
+            'OwnerId' => cd.OwnerId,
+            'ContentDocumentId' => cd.Id
+        };
     }
     
 }

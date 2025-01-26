@@ -72,7 +72,11 @@ export default class ChatterBodyComponent extends LightningElement {
             let buttonName = event.detail.buttonName;
             console.log('button name',buttonName);
             if(buttonName === 'Delete'){
-                publish(this.messageContext, CUSTOM_CHATTER_COMPONENT_CHANNEL, {});
+                const message = {
+                    type: 'Refresh',
+                    data: ''
+                }
+                publish(this.messageContext, CUSTOM_CHATTER_COMPONENT_CHANNEL, message);
             }
         }
     }
