@@ -389,7 +389,7 @@ public with sharing class CustomChatterUtility {
             
             }
         }
-        
+        system.debug('fileMapList: ' + fileMapList);
         return fileMapList;
     }
 
