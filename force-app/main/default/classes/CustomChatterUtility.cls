@@ -388,7 +388,7 @@ public with sharing class CustomChatterUtility {
                 fileMapList.add(returnFileMap(cd));
             
             }
-        }
+        }   
         system.debug('fileMapList: ' + fileMapList);
         return fileMapList;
     }
