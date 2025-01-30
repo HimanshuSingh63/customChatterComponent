@@ -12,8 +12,8 @@ export default class PostComponent extends LightningElement {
     @api type = '';
     @api showShareButton = false;
     @api placeholder; // This will receive the placeholder text from parent
-    richTextValue = `<img src="/sfc/servlet.shepherd/version/download/069NS00000KFoiXYAT" alt="edf_logo">`;
     property;
+    @track isActive = false;
 
     formats = [
         'font',
@@ -29,10 +29,10 @@ export default class PostComponent extends LightningElement {
         'clean',
     ];
 
-    connectedCallback(){
+    connectedCallback(){    
         subscribe(this.messageContext, CUSTOM_CHATTER_COMPONENT_CHANNEL, (message) => {
-            console.log('message received :', JSON.stringify(message));
-            if(message && message?.detail?.type === 'File'){
+            console.log('isActive ', this.isActive+' message received :', JSON.stringify(message) );
+            if(message && message?.detail?.type === 'Add File' && this.isActive){
                 this.handleSelectedFiles(message);
             }
 
@@ -41,13 +41,12 @@ export default class PostComponent extends LightningElement {
     handleAddimage() {
         this.property = 'Add Image';
         this.openFileUploader = true;
-        // console.log('Custom image upload triggered');
-        // this.template.querySelector('c-file-uploader-modal').handleOpenFileUploader();
+        this.isActive = true;
     }
     handleAttachFile(){
         this.property = 'Attach File';
         this.openFileUploader = true;
-        // this.template.querySelector('c-file-uploader-modal').handleOpenFileUploader();  
+        this.isActive = true;
     }
     get inputPlaceholder() {
         return this.placeholder || 'Share an update...'; 
@@ -67,12 +66,14 @@ export default class PostComponent extends LightningElement {
 
     @api handleInputClick() {
         this.showRichText = true;
+        this.isActive = true;
+        
     }
     
     handleChange(e){
         this.richTextValue = e.target.value;
         console.log('rich text value ', this.richTextValue);
-        
+         
         const plainText = this.richTextValue
             ?.replace(/<[^>]*>/g, '') // Remove HTML tags
             ?.replace(/&nbsp;/g, ' ') // Replace &nbsp; with space
@@ -144,6 +145,8 @@ export default class PostComponent extends LightningElement {
     }
     handleClose(){
         this.showRichText = false;
+        this.isActive = false;
+        this.uploadedFiles = [];
     }
     handleCloseFileModal(){
         this.openFileUploader = false;

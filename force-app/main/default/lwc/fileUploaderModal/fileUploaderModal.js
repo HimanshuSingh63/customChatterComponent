@@ -12,6 +12,7 @@ export default class FileUploaderModal extends LightningElement {
     @track selectedNavItem = 'Recent';
     showUploadFileProgress = false;
     isLoading = false;
+    showSpinner = false;
     
 
     @wire(getFiles)
@@ -93,6 +94,9 @@ export default class FileUploaderModal extends LightningElement {
             this.wiredFiles(this.wiredFilesResults);
         }
 
+    }
+    showLoader(){
+        this.showSpinner = true;
     }
     
 }

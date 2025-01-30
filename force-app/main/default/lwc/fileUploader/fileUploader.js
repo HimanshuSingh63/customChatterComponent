@@ -110,7 +110,6 @@ export default class FileUploader extends LightningElement {
             const files = event.target.files;
             if (!files || files.length === 0) return;
             
-            this.isLoading = true;
             const processedFiles = [];
     
             for (const file of Array.from(files)) {
@@ -125,14 +124,7 @@ export default class FileUploader extends LightningElement {
             
             if (this.uploadedFiles.length > 0) {
                 // Call apex to save files in database
-                this.saveFiles();
-                const data = {
-                    detail: {
-                        type: 'File',
-                        data: this.uploadedFiles
-                    }
-                }
-                publish(this.messageContext, CUSTOM_CHATTER_COMPONENT_CHANNEL, data);
+                this.handleSaveFiles();
                 
             }
     
@@ -189,20 +181,28 @@ export default class FileUploader extends LightningElement {
         return this.uploadedFiles;
     }
 
-    saveFiles() {
-        console.log('saveFiles called');
+    handleSaveFiles() {
+        // isLoading = true;
+        this.dispatchEvent(new CustomEvent('uploadstart'));
+        console.log('handleSaveFiles called');
         if (this.uploadedFiles.length > 0) {
             console.log('Files to save:', this.uploadedFiles.length);
             const filesData = JSON.stringify(this.uploadedFiles);
             
             saveFiles({ filesData: filesData })
                 .then(result => {
-                    console.log('Files saved successfully:', JSON.stringify(result));
-                    // Dispatch success event or handle success
+                    this.uploadedFiles=result;
+                    console.log('Files saved successfully:', this.uploadedFiles);
+                    const data = {
+                        detail: {
+                            type: 'Add File',
+                            data: this.uploadedFiles
+                        }
+                    }
+                    publish(this.messageContext, CUSTOM_CHATTER_COMPONENT_CHANNEL, data);
                 })
                 .catch(error => {
-                    console.error('Error saving files:', error);
-                    // Handle error appropriately
+                    console.error('Error saving files:', error); 
                 });
         } else {
             console.log('No files to save');

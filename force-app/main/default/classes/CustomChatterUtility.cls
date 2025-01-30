@@ -366,44 +366,47 @@ public with sharing class CustomChatterUtility {
     }
 
     private static List<Map<String, Object>> getinsertedFiles(List<ContentVersion> cvList) {
+        Set<Id> contentDocIds1 = new Set<Id>();
         Set<Id> contentDocIds = new Set<Id>();
+        Set<Id> contentVerIds = new Set<Id>();
         List<Map<String, Object>> fileMapList = new List<Map<String, Object>>();
         
         // Get ContentDocument Ids from ContentVersions
-        for (ContentVersion cv : cvList) {
-            if(cv.ContentDocumentId != null) {
-                contentDocIds.add(cv.ContentDocumentId);
+        System.debug('ContentVersion List: ' + cvList);
+        if(cvList.size() > 0){
+            for(ContentVersion cv : cvList){
+                contentVerIds.add(cv.Id);
             }
         }
-    
-        if (!contentDocIds.isEmpty()) {
-            for (ContentDocument cd : [SELECT Id, Title, FileType, 
-                                     LatestPublishedVersionId, OwnerId,
-                                     ContentModifiedDate, ContentSize 
-                                     FROM ContentDocument 
-                                     WHERE Id IN :contentDocIds 
+
+        if(contentVerIds.size() > 0){
+            for (ContentVersion cv : [SELECT ContentDocumentId, ContentDocument.Title, ContentDocument.FileType, 
+                                    ContentDocument.LatestPublishedVersionId, ContentDocument.OwnerId,
+                                    ContentDocument.ContentModifiedDate, ContentDocument.ContentSize 
+                                     FROM ContentVersion 
+                                     WHERE Id IN :contentVerIds 
                                      WITH USER_MODE 
                                      LIMIT 49999]) {
-                                         
-                fileMapList.add(returnFileMap(cd));
-            
+                System.debug('ContentVersion in loop: ' + cv);                       
+                fileMapList.add(returnFileMap(cv));
+                                        
             }
         }   
         system.debug('fileMapList: ' + fileMapList);
         return fileMapList;
     }
 
-    private static Map<String, Object> returnFileMap(ContentDocument cd) {
-        
+    private static Map<String, Object> returnFileMap(ContentVersion cv) {
+        System.debug('ContentVersion: ' + cv);
         return new Map<String, Object>{
-            'Id' => cd.LatestPublishedVersionId,
-            'Name' => cd.Title,
-            'Date' => formateDate(cd.ContentModifiedDate),
-            'Size' => formatFileSize(cd.ContentSize),
-            'FileType' => cd.FileType,
-            'fileIconName' => getFileIcon(cd.FileType),
-            'OwnerId' => cd.OwnerId,
-            'ContentDocumentId' => cd.Id
+            'Id' => cv.ContentDocument.LatestPublishedVersionId,
+            'Name' => cv.ContentDocument.Title,
+            'Date' => formateDate(cv.ContentDocument.ContentModifiedDate),
+            'Size' => formatFileSize(cv.ContentDocument.ContentSize),
+            'FileType' => cv.ContentDocument.FileType,
+            'fileIconName' => getFileIcon(cv.ContentDocument.FileType),
+            'OwnerId' => cv.ContentDocument.OwnerId,
+            'ContentDocumentId' => cv.ContentDocumentId
         };
     }
     
