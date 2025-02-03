@@ -112,13 +112,23 @@ export default class PostComponent extends LightningElement {
         );
     }
     handleShare(){
-        console.log('share clicked currentRecordId ',this.currentRecordId,
-            'richTextValue ',this.richTextValue,
-            'type ',this.type
+        if(this.uploadedFiles.length > 0){
+        console.log('uploadedFiles ', JSON.stringify(this.uploadedFiles));
+        
+        let uploadedFileMap = this.uploadedFiles.map(file => {
+            return {Id:file.Id,Name:file.Name}
+            }
         );
+        
+        console.log('share clicked currentRecordId ', this.currentRecordId,
+            'richTextValue ', this.richTextValue,
+            'type ', this.type,
+            'uploadedFileMap ', JSON.stringify(uploadedFileMap)
+        );
+        
         if(this.type === 'FeedItem' ){
-            if(this.currentRecordId && this.richTextValue){
-                    createFeedItem({Body:this.richTextValue,ParentId:this.currentRecordId})
+            if(this.currentRecordId && this.richTextValue && uploadedFileMap.length > 0){
+                    createFeedItem({Body:this.richTextValue,ParentId:this.currentRecordId,VersionMap:uploadedFileMap})
                     .then(result=>{
                         console.log('result ', result);
                         this.showToast('Success','success','Post shared successfully');
@@ -141,7 +151,7 @@ export default class PostComponent extends LightningElement {
                 this.handleClose();
 
             }
-        
+}
     }
     handleClose(){
         this.showRichText = false;

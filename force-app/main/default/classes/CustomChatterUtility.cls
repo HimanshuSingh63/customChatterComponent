@@ -83,7 +83,8 @@ public with sharing class CustomChatterUtility {
     }
     
     @AuraEnabled
-    public static void createFeedItem(String Body,String ParentId){
+    public static void createFeedItem(String Body, String ParentId, List<Map<String,String>> VersionMap) {
+        Savepoint sp = Database.setSavepoint();
         try {
             if(!Schema.SObjectType.FeedItem.isCreateable() || 
                 !Schema.SObjectType.FeedItem.fields.Body.isCreateable() ||
@@ -91,16 +92,40 @@ public with sharing class CustomChatterUtility {
                 !Schema.SObjectType.FeedItem.fields.IsRichText.isCreateable()){
                 throw new AuraHandledException('You do not have the necessary permissions to create a feed item');
             }
+
             FeedItem post = new FeedItem();
             post.Body = Body;
             post.ParentId = ParentId;
             post.IsRichText = true;
+            if(VersionMap != null && VersionMap.size() > 0){
+                post.Type = 'ContentPost';
+            }
             insert as user post;
+            System.debug('FeedItem inserted successfully'+post);
 
+            List<FeedAttachment> feedAttachments = new List<FeedAttachment>();
+            if (VersionMap != null && !VersionMap.isEmpty()) {
+                for (Map<String, String> version : VersionMap) {
+                    String versionId = version.get('Id');
+                    String versionName = version.get('Name');
+                
+                    FeedAttachment feedAttachment = new FeedAttachment();
+                    feedAttachment.FeedEntityId = post.Id;
+                    feedAttachment.RecordId = versionId;
+                    feedAttachment.Title = versionName;
+                    feedAttachment.Type = 'Content';
+                    feedAttachments.add(feedAttachment);
+                }
+
+                if (!feedAttachments.isEmpty()) {
+                    insert as user feedAttachments;  
+                    System.debug('FeedAttachments inserted successfully'+feedAttachments);   
+                }
+            }
         } catch (Exception e) {
+            Database.rollback(sp);
             throw new AuraHandledException(e.getMessage());
         }
-        
     }
     @AuraEnabled
     public static void deleteRecord(String recordId) {
