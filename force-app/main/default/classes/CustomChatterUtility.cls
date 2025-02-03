@@ -2,13 +2,14 @@ public with sharing class CustomChatterUtility {
 
     public Static Id currentUserId = UserInfo.getUserId();
     @AuraEnabled(cacheable=true)
+
     public static List<Map<String, Object>> getRelatedFeeds(Id targetObjectId) {
     
         // Query FeedItems with their related comments and likes
         List<FeedItem> feedItems = [
             SELECT Id, Body, CreatedBy.Name, LastModifiedDate,
                    (SELECT Id, CommentBody, CreatedBy.Name, ThreadLastUpdatedDate
-                    FROM FeedComments ORDER BY CreatedDate DESC),
+                    FROM FeedComments ORDER BY CreatedDate DESC),(SELECT Id,RecordId FROM FeedAttachments),
                    (SELECT Id, InsertedById FROM FeedLikes)
             FROM FeedItem 
             WHERE ParentId = :targetObjectId
@@ -50,6 +51,18 @@ public with sharing class CustomChatterUtility {
                     feedComments.add(feedCommentWrapper);
                 }
             }
+            // Prepare the FeedAttachments as a list of FeedAttachments
+            List<Map<String, Object>> feedAttachments = new List<Map<String, Object>>();
+            if(feedItem.FeedAttachments != null){
+                
+                for(FeedAttachment attachment : feedItem.FeedAttachments){
+                    Map<String, Object> feedAttachmentWrapper = new Map<String, Object>();
+                    feedAttachmentWrapper.put('VersionId', attachment.RecordId);
+                    feedAttachmentWrapper.put('Id', attachment.Id);
+                    feedAttachments.add(feedAttachmentWrapper);
+                }
+
+            }
         
             // Create a FeedItemWrapper instance
             Map<String, Object> feedItemWrapper = new Map<String, Object>();
@@ -60,6 +73,7 @@ public with sharing class CustomChatterUtility {
             feedItemWrapper.put('ThreadLastUpdatedDate', feedItem.LastModifiedDate);
             feedItemWrapper.put('IsLiked', isLiked);
             feedItemWrapper.put('FeedComments', feedComments);
+            feedItemWrapper.put('FeedAttachments', feedAttachments);
         
             // Add the wrapper to the result with a structure matching the desired JSON
             Map<String, Object> singleFeedItem = new Map<String, Object>();
@@ -68,15 +82,15 @@ public with sharing class CustomChatterUtility {
         }
         return result;
     }
-    public static string findInitials(String Name){
+    public static string findInitials(String name){
         String initials;
-        String[] NameParts = Name.split(' ');
+        String[] nameParts = name.split(' ');
 
-        if(NameParts.size() > 0){
-            if (NameParts.size() >= 2){
-                initials = NameParts[0].substring(0,1)+NameParts[1].subString(0,1);
+        if(nameParts.size() > 0){
+            if (nameParts.size() >= 2){
+                initials = nameParts[0].substring(0,1)+nameParts[1].subString(0,1);
             }else{
-                initials = NameParts[0].substring(0,1);
+                initials = nameParts[0].substring(0,1);
             }
         }
         return initials;
@@ -108,7 +122,6 @@ public with sharing class CustomChatterUtility {
                 for (Map<String, String> version : VersionMap) {
                     String versionId = version.get('Id');
                     String versionName = version.get('Name');
-                
                     FeedAttachment feedAttachment = new FeedAttachment();
                     feedAttachment.FeedEntityId = post.Id;
                     feedAttachment.RecordId = versionId;
@@ -434,5 +447,4 @@ public with sharing class CustomChatterUtility {
             'ContentDocumentId' => cv.ContentDocumentId
         };
     }
-    
 }
