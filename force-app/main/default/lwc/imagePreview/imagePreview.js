@@ -14,7 +14,7 @@ export default class ImagePreview extends LightningElement {
     set attachmentData(value){
         console.log('value in Image', JSON.stringify(value));
         this.imageData=value;
-        this.imageUrl='/sfc/servlet.shepherd/version/download/'+value[0].VersionId;
+        this.imageUrl='/sfc/servlet.shepherd/version/download/'+value.VersionId;
     }
 
     showPreview(){
@@ -25,7 +25,7 @@ export default class ImagePreview extends LightningElement {
     }
 
     handleDownload(){
-        
+        window.open(this.imageUrl, '_blank');
     }
 
 }

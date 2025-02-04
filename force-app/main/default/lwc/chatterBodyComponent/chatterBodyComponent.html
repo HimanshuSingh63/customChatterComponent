@@ -52,13 +52,21 @@
             <div class="slds-text-longform">
                 <lightning-formatted-rich-text value={feed.feedItem.Body}></lightning-formatted-rich-text>
                 <template if:true={feed.feedItem.FeedAttachments}>
-                    <template for:each={feed.feedItem.FeedAttachments} for:item="attachment">
-                        <div key={attachment.Id} class="slds-m-top">
-                            <c-image-preview attachment-data={feed.feedItem.FeedAttachments}></c-image-preview>
-                        </div>
-                    </template>
+                    <div class="slds-grid slds-wrap ">
+                        <template for:each={feed.feedItem.FeedAttachments} for:item="attachment">
+                            <div key={attachment.Id} class="slds-col slds-size_1-of-1 slds-small-size_1-of-2 slds-medium-size_1-of-3 slds-large-size_1-of-4">
+                                <div class="slds-p-around_x-small">
+                                    <c-image-preview 
+                                        attachment-data={attachment}
+                                        class="image-preview-container">
+                                    </c-image-preview>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
                 </template>
             </div>
+                
         
             <lightning-layout vertical-align="stretch" multiple-rows="true" >
                 <lightning-layout-item flexibility="auto">
@@ -148,4 +156,5 @@
         <template if:true={showmodal}>
             <c-modal-component onclose={handleshowmodal} ondelete={handleshowmodal} message={messageForModal}></c-modal-component>
         </template>
+
     </template>

@@ -15,3 +15,8 @@
 .liked-text {
     color: rgb(1, 118, 211);
 }
+.image-preview-container {
+    height: 100%;
+    width: 100%;
+    display: block;
+}
