@@ -21,6 +21,7 @@ public with sharing class CustomChatterUtility {
         // Result list to store formatted data
         Set<String> processedFeedItemIds = new Set<String>();
         List<Map<String, Object>> result = new List<Map<String, Object>>();
+        Set<string> versionIds = new Set<string>();
     
         for (FeedItem feedItem : feedItems) {
             // Skip if feed item already processed
@@ -56,12 +57,21 @@ public with sharing class CustomChatterUtility {
             if(feedItem.FeedAttachments != null){
                 
                 for(FeedAttachment attachment : feedItem.FeedAttachments){
-                    Map<String, Object> feedAttachmentWrapper = new Map<String, Object>();
-                    feedAttachmentWrapper.put('VersionId', attachment.RecordId);
-                    feedAttachmentWrapper.put('Id', attachment.Id);
-                    feedAttachments.add(feedAttachmentWrapper);
+                    versionIds.add(attachment.RecordId);
+                    // Map<String, Object> feedAttachmentWrapper = new Map<String, Object>();
+                    // feedAttachmentWrapper.put('VersionId', attachment.RecordId);
+                    // feedAttachmentWrapper.put('Id', attachment.Id);
+                    // feedAttachments.add(feedAttachmentWrapper);
                 }
-
+                if (versionIds.size()>0) {
+                    for (ContentVersion cv : [SELECT Id, ContentDocumentId,FileType FROM ContentVersion WHERE Id IN :versionIds]) {
+                        Map<String, Object> feedAttachmentWrapper = new Map<String, Object>();
+                        feedAttachmentWrapper.put('VersionId', cv.Id);
+                        feedAttachmentWrapper.put('ContentDocumentId', cv.ContentDocumentId);
+                        feedAttachmentWrapper.put('Type', cv.FileType);
+                        feedAttachments.add(feedAttachmentWrapper);
+                    }  
+                }
             }
         
             // Create a FeedItemWrapper instance

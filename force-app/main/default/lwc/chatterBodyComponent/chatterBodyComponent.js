@@ -13,6 +13,7 @@ export default class ChatterBodyComponent extends LightningElement {
     type = 'FeedComment';
     @wire(MessageContext)
     messageContext;
+    url ='/sfc/servlet.shepherd/version/renditionDownload?rendition=THUMB720BY480&versionId=068NS00000K8mtZYAR&operationContext=CHATTER&contentId=069NS00000LHMo1YAH'
 
     get buttonText() {
         return this.isLiked ? 'Liked' : 'Like';

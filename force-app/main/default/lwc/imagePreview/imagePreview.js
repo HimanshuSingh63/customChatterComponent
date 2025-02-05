@@ -4,6 +4,7 @@ export default class ImagePreview extends LightningElement {
 
     openPreview=false;
     imageUrl='';
+    pdfUrl='';
     imageData;
     
     @api
