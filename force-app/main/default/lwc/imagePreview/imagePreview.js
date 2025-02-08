@@ -5,7 +5,7 @@ export default class ImagePreview extends LightningElement {
     openPreview=false;
     imageUrl='';
     pdfUrl='';
-    imageData;
+    fileData;
     
     @api
     get attachmentData(){
@@ -14,9 +14,19 @@ export default class ImagePreview extends LightningElement {
 
     set attachmentData(value){
         console.log('value in Image', JSON.stringify(value));
-        this.imageData=value;
+        this.fileData=value;
         this.imageUrl='/sfc/servlet.shepherd/version/download/'+value.VersionId;
     }
+
+    get isImage() {
+        const imageTypes = ['PNG', 'JPG', 'JPEG', 'GIF'];
+        return imageTypes.includes(this.fileData?.Type.toUpperCase());
+    }
+    
+    get fileUrl() {
+        return `/sfc/servlet.shepherd/document/download/${this.fileData.ContentDocumentId}`;
+    }
+    
 
     showPreview(){
         this.openPreview=true;
