@@ -112,14 +112,16 @@ export default class PostComponent extends LightningElement {
         );
     }
     handleShare(){
-        if(this.uploadedFiles.length > 0){
-        console.log('uploadedFiles ', JSON.stringify(this.uploadedFiles));
+        console.log('share clicked');
         
-        let uploadedFileMap = this.uploadedFiles.map(file => {
-            return {Id:file.Id,Name:file.Name}
-            }
-        );
-        
+        let uploadedFileMap = [];
+        if (this.uploadedFiles && this.uploadedFiles.length > 0) {
+            console.log('uploadedFiles ', JSON.stringify(this.uploadedFiles));
+            uploadedFileMap = this.uploadedFiles.map(file => ({
+                Id: file.Id,
+                Name: file.Name
+            }));
+        }
         console.log('share clicked currentRecordId ', this.currentRecordId,
             'richTextValue ', this.richTextValue,
             'type ', this.type,
@@ -127,10 +129,20 @@ export default class PostComponent extends LightningElement {
         );
         
         if(this.type === 'FeedItem' ){
-            if(this.currentRecordId && this.richTextValue && uploadedFileMap.length > 0){
-                    createFeedItem({Body:this.richTextValue,ParentId:this.currentRecordId,VersionMap:uploadedFileMap})
+
+            if(!this.currentRecordId) {
+                this.showToast('Error', 'error', 'Record ID is required');
+                return;
+            }
+            
+            if(this.richTextValue){
+                     createFeedItem({
+                         Body: this.richTextValue,
+                         ParentId: this.currentRecordId,
+                         VersionMap: uploadedFileMap
+                     })
                     .then(result=>{
-                        console.log('result ', result);
+                        console.log('result ', result); 
                         this.showToast('Success','success','Post shared successfully');
                         const message = {
                             type: 'Refresh',
@@ -151,7 +163,6 @@ export default class PostComponent extends LightningElement {
                 this.handleClose();
 
             }
-}
     }
     handleClose(){
         this.showRichText = false;

@@ -123,6 +123,8 @@ public with sharing class CustomChatterUtility {
             post.IsRichText = true;
             if(VersionMap != null && VersionMap.size() > 0){
                 post.Type = 'ContentPost';
+            }else{
+                post.Type = 'TextPost';
             }
             insert as user post;
             System.debug('FeedItem inserted successfully'+post);

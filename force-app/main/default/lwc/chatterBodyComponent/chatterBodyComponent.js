@@ -97,7 +97,11 @@ export default class ChatterBodyComponent extends LightningElement {
                 .then(reuslt=>{
                     console.log('result ', reuslt);
                     this.showToast('Success','success','Comment shared successfully');
-                    publish(this.messageContext, CUSTOM_CHATTER_COMPONENT_CHANNEL, {});
+                    const message = {
+                        type: 'Refresh',
+                        data: ''
+                    }
+                    publish(this.messageContext, CUSTOM_CHATTER_COMPONENT_CHANNEL,message);
                 })
                 .catch(error=>{
                     console.log('error ',error.body.message);
