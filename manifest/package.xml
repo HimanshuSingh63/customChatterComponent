@@ -2,7 +2,7 @@
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
 		<members>SaveRTAImageController</members>
-		<members>RetrieveRelatedFeedRecords</members>
+		<members>CustomChatterUtility</members>
 		<name>ApexClass</name>
 	</types>
 	<types>
@@ -12,14 +12,14 @@
 	<types>
 		<members>chatterBodyComponent</members>
 		<members>customChatterComponent</members>
+		<members>filesDataComponent</members>
 		<members>fileUploader</members>
+		<members>fileUploaderModal</members>
 		<members>imagePreview</members>
 		<members>modalComponent</members>
 		<members>pollComponent</members>
 		<members>postComponent</members>
 		<members>questionComponent</members>
-		<members>smartlists__editFileModal</members>
-		<members>smartlists__uploadFileVersionModal</members>
 		<name>LightningComponentBundle</name>
 	</types>
     <version>62.0</version>
