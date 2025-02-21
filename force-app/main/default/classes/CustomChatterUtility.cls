@@ -116,13 +116,20 @@ public with sharing class CustomChatterUtility {
                 !Schema.SObjectType.FeedItem.fields.IsRichText.isCreateable()){
                 throw new AuraHandledException('You do not have the necessary permissions to create a feed item');
             }
-
             FeedItem post = new FeedItem();
-            post.Body = Body;
-            post.ParentId = ParentId;
-            post.IsRichText = true;
+            
             if(VersionMap != null && VersionMap.size() > 0){
+                
+                post.Body = Body;
+                post.ParentId = ParentId;
+                post.IsRichText = true;
                 post.Type = 'ContentPost';
+            }
+            else{
+                post.Body = Body;
+                post.ParentId = ParentId;
+                post.IsRichText = true;
+                post.Type = 'TextPost';
             }
             insert as user post;
             System.debug('FeedItem inserted successfully'+post);
