@@ -7,6 +7,29 @@
 .slds-backdrop {
     background: rgba(0, 0, 0, 0.896) !important; /* Darker overlay */
 }
-.preview-box-header{
-    border-style: none;
+.preview{
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    
+}
+
+.preview-box-header {
+    background: #032D60;
+    border: none;
+    padding: 0.75rem;
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 9002;
+}
+
+/* Ensure title truncates properly */
+.slds-truncate {
+    max-width: 100%;
+    display: block;
 }

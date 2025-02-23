@@ -2,6 +2,15 @@
     display: inline-flex;
     align-items: center;
     cursor: pointer;
+    gap: 0.25rem;
+    min-width: fit-content;
+}
+
+
+@media (max-width: 768px) {
+    .slds-grid {
+        gap: 0.5rem;
+    }
 }
 
 .like-icon {

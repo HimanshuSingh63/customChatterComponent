@@ -64,11 +64,12 @@ public with sharing class CustomChatterUtility {
                     // feedAttachments.add(feedAttachmentWrapper);
                 }
                 if (versionIds.size()>0) {
-                    for (ContentVersion cv : [SELECT Id, ContentDocumentId,FileType FROM ContentVersion WHERE Id IN :versionIds]) {
+                    for (ContentVersion cv : [SELECT Id, ContentDocumentId,FileType,Title FROM ContentVersion WHERE Id IN :versionIds]) {
                         Map<String, Object> feedAttachmentWrapper = new Map<String, Object>();
                         feedAttachmentWrapper.put('VersionId', cv.Id);
                         feedAttachmentWrapper.put('ContentDocumentId', cv.ContentDocumentId);
                         feedAttachmentWrapper.put('Type', cv.FileType);
+                        feedAttachmentWrapper.put('Title', cv.Title);
                         feedAttachments.add(feedAttachmentWrapper);
                     }  
                 }

@@ -1,12 +1,11 @@
-import { LightningElement,api } from 'lwc';
+import { LightningElement,api,track } from 'lwc';
 
 export default class ImagePreview extends LightningElement {
 
     openPreview=false;
     imageUrl='';
-    pdfUrl='';
-    fileData;
-    
+    @track fileData;
+
     @api
     get attachmentData(){
         return this.imageData;
@@ -26,7 +25,31 @@ export default class ImagePreview extends LightningElement {
     get fileUrl() {
         return `/sfc/servlet.shepherd/document/download/${this.fileData.ContentDocumentId}`;
     }
+
+    get filePreviewUrl() {
+        return `/sfc/servlet.shepherd/version/renditionDownload?rendition=THUMB720BY480&versionId=${this.fileData.VersionId}&operationContext=CHATTER&contentId=${this.fileData.ContentDocumentId}`;
+    }
     
+    get fileTitle() {
+        return this.fileData.Title ? this.fileData.Title : 'No Title';
+    }
+
+    get fileIconName() {
+        const fileType = this.fileData.Type.toLowerCase();
+        if (fileType === 'pdf') {
+            return 'doctype:pdf';
+        } else if (fileType === 'excel') {
+            return 'doctype:excel';
+        } else if (fileType === 'word') {
+            return 'doctype:word';
+        } else if (fileType === 'powerpoint') {
+            return 'doctype:ppt';
+        } else if (fileType === 'png' || fileType === 'jpg' || fileType === 'jpeg' || fileType === 'gif') {
+            return 'doctype:image';
+        } else {
+            return 'doctype:attachment';
+        }
+    }
 
     showPreview(){
         this.openPreview=true;
