@@ -10,8 +10,6 @@
                     <img src={filePreviewUrl} class="preview" alt="File Preview" /> 
                 </template>
             </div>
-
-            
             <!-- Card footer with buttons -->
             <div class="slds-grid slds-grid_align-spread slds-p-around_xx-small" style="background-color: #032D60;">
                 <div class="slds-col slds-has-flexi-truncate slds-grid slds-grid_vertical-align-center">
@@ -23,8 +21,8 @@
                         class="slds-m-right_xx-small"
                         variant="inverse">
                     </lightning-icon>
-                    <div class="slds-truncate slds-text-color_inverse" style="color: white !important;">
-                        Nice
+                    <div class="slds-truncate slds-text-color_inverse">
+                        {fileTitle}
                     </div>
                 </div>
                 <div class="slds-col slds-no-flex">
@@ -77,7 +75,8 @@
                                     <lightning-button 
                                         label="Download" 
                                         title="Download action with base variant" 
-                                        icon-name="utility:download">
+                                        icon-name="utility:download"
+                                        onclick={handleDownload}>
                                     </lightning-button>
                                     <lightning-button 
                                         label="Share"
@@ -89,12 +88,12 @@
                                         title="Public Link"
                                         icon-name="utility:link">
                                     </lightning-button>
-                                    <lightning-button-menu alternative-text="Show menu" variant="border-filled">
+                                    <!-- <lightning-button-menu alternative-text="Show menu" variant="border-filled">
                                         <lightning-menu-item value="View Details" label="View Details"></lightning-menu-item>
                                         <lightning-menu-item value="Edit Details" label="Edit Details"></lightning-menu-item>
                                         <lightning-menu-item value="Upload New Version" label="Upload New Version"></lightning-menu-item>
                                         <lightning-menu-item value="Delete" label="Delete"></lightning-menu-item>
-                                    </lightning-button-menu>
+                                    </lightning-button-menu> -->
                                 </lightning-button-group>
                             </div>
                         </div>

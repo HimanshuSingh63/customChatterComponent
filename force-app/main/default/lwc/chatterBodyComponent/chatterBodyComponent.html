@@ -35,13 +35,12 @@
                         <div class="slds-grid slds-grid_align-spread">
                             <div class="slds-col">
                                 <a onmouseover={handlePopOver}>{feed.feedItem.CreatedByName}</a>
-                                <div class="slds-text-body_small slds-text-color_weak">Today</div>
+                                <div class="slds-text-body_small slds-text-color_weak">{feed.feedItem.timeDifference}</div>
                             </div>
                             <div class="slds-col slds-grid_align-end">
                                 <lightning-button-menu alternative-text="Action menu" menu-alignment="right" variant="container">
                                     <lightning-menu-item value="Edit" label="Edit" onclick={handleFeedAction}></lightning-menu-item>
                                     <lightning-menu-item value="Delete" label="Delete" onclick={handleFeedAction}></lightning-menu-item>
-                                    <lightning-menu-item value="Bookmark" label="Bookmark" onclick={handleFeedAction}></lightning-menu-item>
                                 </lightning-button-menu>
                             </div>
                         </div>
@@ -111,7 +110,7 @@
                                         <div class="slds-grid slds-grid_align-spread">
                                             <div class="slds-col">
                                                 <a onmouseover={handlePopOver}>{comment.CreatedByName}</a>
-                                                <div class="slds-text-body_small slds-text-color_weak">1h ago</div>
+                                                <div class="slds-text-body_small slds-text-color_weak">{comment.timeDifference}</div>
                                             </div>
                                             <div class="slds-col slds-grid_align-end">
                                                 <lightning-button-menu alternative-text="Action menu" menu-alignment="right" variant="container">

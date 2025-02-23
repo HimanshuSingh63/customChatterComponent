@@ -7,8 +7,8 @@ public with sharing class CustomChatterUtility {
     
         // Query FeedItems with their related comments and likes
         List<FeedItem> feedItems = [
-            SELECT Id, Body, CreatedBy.Name, LastModifiedDate,
-                   (SELECT Id, CommentBody, CreatedBy.Name, ThreadLastUpdatedDate
+            SELECT Id, Body, CreatedBy.Name, CreatedDate,
+                   (SELECT Id, CommentBody, CreatedBy.Name, CreatedDate
                     FROM FeedComments ORDER BY CreatedDate DESC),(SELECT Id,RecordId FROM FeedAttachments),
                    (SELECT Id, InsertedById FROM FeedLikes)
             FROM FeedItem 
@@ -49,6 +49,7 @@ public with sharing class CustomChatterUtility {
                     feedCommentWrapper.put('CommentBody', comment.CommentBody);
                     feedCommentWrapper.put('CreatedByName', comment.CreatedBy.Name);
                     feedCommentWrapper.put('Id', comment.Id);
+                    feedCommentWrapper.put('CreatedDate', comment.CreatedDate);
                     feedComments.add(feedCommentWrapper);
                 }
             }
@@ -81,7 +82,7 @@ public with sharing class CustomChatterUtility {
             feedItemWrapper.put('Body', feedItem.Body);
             feedItemWrapper.put('CreatedByName', feedItem.CreatedBy.Name);
             feedItemWrapper.put('NameInitials', findInitials(feedItem.CreatedBy.Name));
-            feedItemWrapper.put('ThreadLastUpdatedDate', feedItem.LastModifiedDate);
+            feedItemWrapper.put('CreatedDate', feedItem.CreatedDate);
             feedItemWrapper.put('IsLiked', isLiked);
             feedItemWrapper.put('FeedComments', feedComments);
             feedItemWrapper.put('FeedAttachments', feedAttachments);

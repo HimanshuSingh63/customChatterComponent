@@ -35,8 +35,28 @@ export default class ChatterBodyComponent extends LightningElement {
         console.log(
             'set values',
             JSON.stringify(value));
-        this.feed = value;
+        this.feed = this.processData(JSON.parse(JSON.stringify(value)));
         this.isLiked = value.feedItem.IsLiked;
+
+        console.log(
+            'Processed values',
+            JSON.stringify(this.feed));
+    }
+
+    // Method to process the JSON data
+    processData(data) {
+        // Process feed item
+        data.feedItem.timeDifference = this.formatTimeDifference(data.feedItem.CreatedDate);
+
+        // Process comments
+        if (data.feedItem.FeedComments && data.feedItem.FeedComments.length > 0) {
+            data.feedItem.FeedComments = data.feedItem.FeedComments.map(comment => ({
+                ...comment,
+                timeDifference: this.formatTimeDifference(comment.CreatedDate)
+            }));
+        }
+
+        return data;
     }
     
     handleLikeClick() {
@@ -153,6 +173,49 @@ export default class ChatterBodyComponent extends LightningElement {
         });
         this.dispatchEvent(event);
     }
+
+    get formattedTimeDifference() {
+        return this.formatTimeDifference(this.feed.feedItem.CreatedDate);
+    }
+
+  
+    formatTimeDifference(dateString) {
+        try {
+            console.log('dateString',dateString);
+            
+            const updatedDate = new Date(dateString);
+            const currentDate = new Date();
+            
+            if (isNaN(updatedDate.getTime())) {
+                return 'Invalid date';
+            }
+    
+            const diffInMilliseconds = currentDate - updatedDate;
+            const diffInMinutes = Math.floor(diffInMilliseconds / (1000 * 60));
+            const diffInHours = Math.floor(diffInMilliseconds / (1000 * 60 * 60));
+            const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+            const diffInMonths = Math.floor(diffInDays / 30);
+            const diffInYears = Math.floor(diffInDays / 365);
+    
+            if (diffInMinutes < 1) {
+                return 'Just now';
+            } else if (diffInMinutes < 60) {
+                return `${diffInMinutes} ${diffInMinutes === 1 ? 'minute' : 'minutes'} ago`;
+            } else if (diffInHours < 24) {
+                return `${diffInHours} ${diffInHours === 1 ? 'hour' : 'hours'} ago`;
+            } else if (diffInDays < 30) {
+                return `${diffInDays} ${diffInDays === 1 ? 'day' : 'days'} ago`;
+            } else if (diffInYears < 1) {
+                return `${diffInMonths} ${diffInMonths === 1 ? 'month' : 'months'} ago`;
+            } else {
+                return `${diffInYears} ${diffInYears === 1 ? 'year' : 'years'} ago`;
+            }
+        } catch (error) {
+            console.error('Error formatting date:', error);
+            return 'Date unavailable';
+        }
+    }
+    
     
 
 }

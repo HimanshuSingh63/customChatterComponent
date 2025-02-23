@@ -1,6 +1,7 @@
 import { LightningElement,api,track } from 'lwc';
+import { NavigationMixin } from 'lightning/navigation';
 
-export default class ImagePreview extends LightningElement {
+export default class ImagePreview extends NavigationMixin(LightningElement) {
 
     openPreview=false;
     imageUrl='';
@@ -58,8 +59,17 @@ export default class ImagePreview extends LightningElement {
         this.openPreview=false;
     }
 
-    handleDownload(){
-        window.open(this.imageUrl, '_blank');
+    handleDownload() {
+        if (this.fileData.Type.toLowerCase() === 'pdf') {
+            this[NavigationMixin.Navigate]({
+                type: 'standard__webPage',
+                attributes: {
+                    url: `/sfc/servlet.shepherd/document/download/${this.fileData.ContentDocumentId}`
+                }
+            }, true); // The true parameter forces download instead of navigation
+        } else {
+            window.open(this.imageUrl, '_blank');
+        }
     }
 
 }
