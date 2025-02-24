@@ -138,12 +138,24 @@ export default class ChatterBodyComponent extends LightningElement {
             const feedItemElement = e.target.closest('[data-id]');
             const feedItemId = feedItemElement.dataset.id;
             console.log('Delete clicked feeditem id',feedItemId);
+            this.messageForModal.isEdit = false;
             this.messageForModal.Title = "Delete Post";
             this.messageForModal.Body = "Deleting this item permanently removes it. We're just making sure that's what you want.";
             this.messageForModal.Id = feedItemId;
             this.messageForModal.ButtonName = 'Delete';
             this.showmodal = true;
+        }else if(e.target.label === 'Edit'){
+            const feedItemElement = e.target.closest('[data-id]');
+            const feedItemId = feedItemElement.dataset.id;
+            console.log('Edit clicked feeditem id',feedItemId);
+            this.messageForModal.Title = "Edit Post";
+            this.messageForModal.isEdit = true;
+            this.messageForModal.Body = this.feed.feedItem.Body;
+            this.messageForModal.Id = feedItemId;
+            this.messageForModal.ButtonName = 'Save';
+            this.showmodal = true;
         }
+
     }
 
     handleFeedCommentAction(e){
