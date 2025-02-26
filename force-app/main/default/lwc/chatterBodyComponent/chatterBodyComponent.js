@@ -2,6 +2,8 @@ import { LightningElement,track,api,wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { publish, MessageContext } from 'lightning/messageService';
 import createFeedComment from '@salesforce/apex/CustomChatterUtility.createFeedComment';
+import UpdateFeedItem from '@salesforce/apex/CustomChatterUtility.UpdateFeedItem';
+import UpdateFeedComment from '@salesforce/apex/CustomChatterUtility.UpdateFeedComment';
 import manageLike from '@salesforce/apex/CustomChatterUtility.manageLike';
 import CUSTOM_CHATTER_COMPONENT_CHANNEL from '@salesforce/messageChannel/Custom_Chatter_Component__c';
 export default class ChatterBodyComponent extends LightningElement {
@@ -170,6 +172,29 @@ export default class ChatterBodyComponent extends LightningElement {
             this.showmodal = true;
             console.log('this.showmodal',this.showmodal);
             
+        }else if(e.target.label ==='Edit'){
+            const feedCommentElement = e.target.closest('[data-feed-comment-id]');
+            console.log('feedCommentElement', feedCommentElement);
+
+            const feedCommentId = feedCommentElement.dataset.feedCommentId;
+            console.log('Edit clicked feed comment id', feedCommentId);
+
+            const richTextElement = feedCommentElement.querySelector('.comment-content lightning-formatted-rich-text');
+            console.log('richTextElement', richTextElement);
+            
+            let feedCommentBody = '';
+
+            // Check if the element exists before accessing its content
+            if (richTextElement) {
+                feedCommentBody = richTextElement.value || '';
+            }
+            console.log('Comment body:', feedCommentBody);
+            this.messageForModal.Title = "Edit Comment";
+            this.messageForModal.isEdit = true;
+            this.messageForModal.Body = feedCommentBody;
+            this.messageForModal.Id = feedCommentId;
+            this.messageForModal.ButtonName = 'Save';
+            this.showmodal = true
         }
     }
     handleCloseModal(){
@@ -228,6 +253,51 @@ export default class ChatterBodyComponent extends LightningElement {
         }
     }
     
-    
+    handleUpdateFeedItem(event){
+        console.log('handleUpdateFeedItem data',JSON.stringify(event.detail));
+        const {buttonName,valueToUpdate,uploadedFiles,feedItemId} = event.detail;
+        this.showmodal = false;
+        this.messageForModal = {};
+        if(valueToUpdate && feedItemId){ 
+            UpdateFeedItem({BodyToUpdate:valueToUpdate,FeedItemId:feedItemId})
+            .then(reuslt=>{
+                console.log('result ', reuslt);
+                this.showToast('Success','success','Post updated successfully');
+                const message = {
+                    type: 'Refresh',
+                    data: ''
+                }
+                publish(this.messageContext, CUSTOM_CHATTER_COMPONENT_CHANNEL,message);
+            })
+            .catch(error=>{
+                console.log('error ',error.body.message);
+                this.showToast('Error','Error',error.body.message);
+            });
+        }
+        
+    }
+    handleUpdateFeedComment(event){
+        console.log('handleUpdateFeedComment data',JSON.stringify(event.detail));
+        const {buttonName,valueToUpdate,uploadedFiles,feedCommentId} = event.detail;
+        this.showmodal = false;
+        this.messageForModal = {};
+        if(valueToUpdate && feedCommentId){ 
+            UpdateFeedComment({BodyToUpdate:valueToUpdate,FeedCommentId:feedCommentId})
+            .then(reuslt=>{
+                console.log('result ', reuslt);
+                this.showToast('Success','success','Comment updated successfully');
+                const message = {
+                    type: 'Refresh',
+                    data: ''
+                }
+                publish(this.messageContext, CUSTOM_CHATTER_COMPONENT_CHANNEL,message);
+            })
+            .catch(error=>{
+                console.log('error ',error.body.message);
+                this.showToast('Error','Error',error.body.message);
+            });
+        }
+        
+    }
 
 }

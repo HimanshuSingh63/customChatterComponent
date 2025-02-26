@@ -152,7 +152,13 @@
             </div>
         </div>  
         <template if:true={showmodal}>
-            <c-modal-component onclose={handleshowmodal} ondelete={handleshowmodal} message={messageForModal}></c-modal-component>
+            <c-modal-component 
+                onclose={handleshowmodal} 
+                ondelete={handleshowmodal} 
+                message={messageForModal} 
+                onupdatefeeditem={handleUpdateFeedItem} 
+                onupdatefeedcomment={handleUpdateFeedComment}>
+            </c-modal-component>
         </template>
 
     </template>

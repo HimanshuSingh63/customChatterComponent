@@ -1,5 +1,6 @@
 import { LightningElement,api ,track} from 'lwc';
 import deleteRecord from '@salesforce/apex/CustomChatterUtility.deleteRecord';
+import createFeedItem from '@salesforce/apex/CustomChatterUtility.createFeedItem';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 export default class ModalComponent extends LightningElement {
 
@@ -16,7 +17,7 @@ export default class ModalComponent extends LightningElement {
         'link',
         'clean',
     ];
-
+    valueToUpdate;
     property;
     openFileUploader = false;
     @track uploadedFiles;
@@ -55,8 +56,27 @@ export default class ModalComponent extends LightningElement {
             this.dispatchEvent(new CustomEvent('close',{detail:
                 {buttonName: 'Cancel'}
             }));
+        }else if(event.target.value === 'Save'){
+            
+            console.log('save button clicked');
+
+            if(this.message.Title === 'Edit Post'){
+                this.dispatchEvent(new CustomEvent('updatefeeditem',{detail:
+                    {buttonName: 'Save',valueToUpdate: this.valueToUpdate,
+                    uploadedFiles: this.uploadedFiles,feedItemId: this.message.Id}
+                }));
+            }else if(this.message.Title === 'Edit Comment'){
+                this.dispatchEvent(new CustomEvent('updatefeedcomment',{detail:
+                    {buttonName: 'Save',valueToUpdate: this.valueToUpdate,
+                    uploadedFiles: this.uploadedFiles,feedCommentId: this.message.Id}
+                }));
+
+            }
+            
+           
         }
     }
+    
 
     showtoast(title,message,variant){
         const event = new ShowToastEvent({
@@ -67,10 +87,12 @@ export default class ModalComponent extends LightningElement {
         });
         this.dispatchEvent(event);
     }
+
     handleChange(event){
         console.log('handle change');
-        let velue = event.target.value;
-        console.log('value',velue);
+        let value = event.target.value;
+        this.valueToUpdate = value;
+        console.log('value',this.valueToUpdate);
     }
 
     handleAttachFile(){

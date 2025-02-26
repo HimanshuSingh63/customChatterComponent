@@ -109,7 +109,7 @@ public with sharing class CustomChatterUtility {
     }
     
     @AuraEnabled
-    public static void createFeedItem(String Body, String ParentId, List<Map<String,String>> VersionMap) {
+    public static String createFeedItem(String Body, String ParentId, List<Map<String,String>> VersionMap) {
         Savepoint sp = Database.setSavepoint();
         try {
             if(!Schema.SObjectType.FeedItem.isCreateable() || 
@@ -146,9 +146,11 @@ public with sharing class CustomChatterUtility {
 
                 if (!feedAttachments.isEmpty()) {
                     insert as user feedAttachments;  
-                    System.debug('FeedAttachments inserted successfully'+feedAttachments);   
+                    System.debug('FeedAttachments inserted successfully'+feedAttachments);
+                    return 'Success '+post.Id;   
                 }
             }
+            return 'Success '+post.Id;
         } catch (Exception e) {
             Database.rollback(sp);
             throw new AuraHandledException(e.getMessage());
@@ -177,7 +179,7 @@ public with sharing class CustomChatterUtility {
     }
     
     @AuraEnabled
-    public static void createFeedComment(String CommentBody,String FeedItemId){
+    public static string createFeedComment(String CommentBody,String FeedItemId){
         try {
             if( !Schema.SObjectType.FeedComment.isCreateable() ||
                 !Schema.SObjectType.FeedComment.fields.CommentBody.isCreateable() ||
@@ -190,7 +192,9 @@ public with sharing class CustomChatterUtility {
             comment.FeedItemId = FeedItemId;
             comment.IsRichText = true;
             insert as user comment;
+            return 'Success '+comment.Id;
         } catch (Exception e) {
+
             throw new AuraHandledException(e.getMessage());
         }
     }
@@ -460,5 +464,60 @@ public with sharing class CustomChatterUtility {
             'OwnerId' => cv.ContentDocument.OwnerId,
             'ContentDocumentId' => cv.ContentDocumentId
         };
+    }
+
+    @AuraEnabled
+    public static string UpdateFeedItem(String BodyToUpdate,String FeedItemId){
+        try {
+            System.debug('BodyToUpdate: '+BodyToUpdate);
+            System.debug('FeedItemId: '+FeedItemId);
+            if (BodyToUpdate != null && FeedItemId != null) {
+                
+                if(!Schema.SObjectType.FeedItem.isAccessible() || 
+                    !Schema.SObjectType.FeedItem.isUpdateable() ||
+                    !Schema.SObjectType.FeedItem.fields.Body.isAccessible() ||
+                    !Schema.SObjectType.FeedItem.fields.Body.isUpdateable()){
+                    throw new AuraHandledException('You do not have the necessary permissions to update a feed Item');
+                }
+                FeedItem item = [SELECT Id, Body FROM FeedItem WHERE Id = :FeedItemId WITH USER_MODE LIMIT 1];
+                if (item != null) {
+                    item.Body = BodyToUpdate;
+                    update as user item;
+                    return 'Success '+item.Id;
+                }
+                return 'Error';
+                
+            }
+            return 'Body or FeedItemId is null';
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+    @AuraEnabled
+    public static string UpdateFeedComment(String BodyToUpdate,String FeedCommentId){
+        try {
+            System.debug('BodyToUpdate: '+BodyToUpdate);
+            System.debug('FeedItemId: '+FeedCommentId);
+            if (BodyToUpdate != null && FeedCommentId != null) {
+                
+                if(!Schema.SObjectType.FeedComment.isAccessible() || 
+                    !Schema.SObjectType.FeedComment.isUpdateable() ||
+                    !Schema.SObjectType.FeedComment.fields.CommentBody.isAccessible() ||
+                    !Schema.SObjectType.FeedComment.fields.CommentBody.isUpdateable()){
+                    throw new AuraHandledException('You do not have the necessary permissions to update a feed Item');
+                }
+                FeedComment comment = [SELECT Id, CommentBody FROM FeedComment WHERE Id = :FeedCommentId WITH USER_MODE LIMIT 1];
+                if (comment != null) {
+                    comment.CommentBody = BodyToUpdate;
+                    update as user comment;
+                    return 'Success '+comment.Id;
+                }
+                return 'Error';
+                
+            }
+            return 'Body or FeedCommentId is null';
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
     }
 }

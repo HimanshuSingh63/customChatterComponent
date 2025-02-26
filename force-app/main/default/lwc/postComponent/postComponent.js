@@ -1,6 +1,6 @@
 import { LightningElement,track,api,wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import createFeedItem from '@salesforce/apex/CustomChatterUtility.createFeedItem';
+
 import { publish, MessageContext,subscribe } from 'lightning/messageService';
 import CUSTOM_CHATTER_COMPONENT_CHANNEL from '@salesforce/messageChannel/Custom_Chatter_Component__c';
 export default class PostComponent extends LightningElement {
