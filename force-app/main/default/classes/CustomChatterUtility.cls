@@ -7,7 +7,7 @@ public with sharing class CustomChatterUtility {
     
         // Query FeedItems with their related comments and likes
         List<FeedItem> feedItems = [
-            SELECT Id, Body, CreatedBy.Name, CreatedDate,
+            SELECT Id, Body, CreatedBy.Name, CreatedDate,Type,
                    (SELECT Id, CommentBody, CreatedBy.Name, CreatedDate
                     FROM FeedComments ORDER BY CreatedDate DESC),(SELECT Id,RecordId FROM FeedAttachments),
                    (SELECT Id, InsertedById FROM FeedLikes)
@@ -84,9 +84,17 @@ public with sharing class CustomChatterUtility {
             feedItemWrapper.put('NameInitials', findInitials(feedItem.CreatedBy.Name));
             feedItemWrapper.put('CreatedDate', feedItem.CreatedDate);
             feedItemWrapper.put('IsLiked', isLiked);
+            feedItemWrapper.put('Type', feedItem.Type);
             feedItemWrapper.put('FeedComments', feedComments);
             feedItemWrapper.put('FeedAttachments', feedAttachments);
-        
+            if (feedItem.Type == 'PollPost') {
+                
+                ConnectApi.FeedElement feedElement = ConnectApi.ChatterFeeds.getFeedElement(null, feedItem.Id);
+                ConnectApi.PollCapability pollCapability = (ConnectApi.PollCapability)feedElement.capabilities.poll;
+                System.debug('Poll capability: ' + pollCapability.choices); 
+                feedItemWrapper.put('Pollchoices', pollCapability.choices);
+            }
+
             // Add the wrapper to the result with a structure matching the desired JSON
             Map<String, Object> singleFeedItem = new Map<String, Object>();
             singleFeedItem.put('feedItem', feedItemWrapper);
@@ -518,6 +526,59 @@ public with sharing class CustomChatterUtility {
             return 'Body or FeedCommentId is null';
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    @AuraEnabled
+    public static string createPoll(String input) {
+        try {
+            // Parse the JSON string input
+            Map<String, Object> pollMap = (Map<String, Object>)JSON.deserializeUntyped(input);
+            
+            // Extract values with proper type casting
+            String pollQuestion = (String)pollMap.get('question');
+            List<Object> optionsObj = (List<Object>)pollMap.get('options');
+            String recordId = (String)pollMap.get('recordId');
+            
+            // Convert options to List<String>
+            List<String> pollOptions = new List<String>();
+            for(Object opt : optionsObj) {
+                pollOptions.add((String)opt);
+            }
+            
+            System.debug('pollQuestion: ' + pollQuestion);
+            System.debug('pollOptions: ' + pollOptions);
+            System.debug('recordId: ' + recordId);
+            
+            // //poll creation logic here
+            // ConnectApi.PollCapabilityInput pollPost = new ConnectApi.PollCapabilityInput();
+            // pollPost.choices = pollOptions;
+
+            // ConnectApi.FeedElementCapabilitiesInput itemCapabilities = new ConnectApi.FeedElementCapabilitiesInput();
+            // itemCapabilities.poll = pollPost;
+
+            // ConnectApi.FeedItemInput feedItem = new ConnectApi.FeedItemInput();
+
+            // feedItem.feedElementType = ConnectApi.FeedElementType.FeedItem;
+            // feedItem.capabilities = itemCapabilities;
+            // feedItem.subjectId = recordId;
+
+            // ConnectApi.MessageBodyInput messageBodyInput = new ConnectApi.MessageBodyInput();
+
+            // messageBodyInput.messageSegments = new List<ConnectApi.MessageSegmentInput>();
+
+            // ConnectApi.TextSegmentInput textSegment = new ConnectApi.TextSegmentInput();
+            // textSegment.text = pollQuestion;
+            // messageBodyInput.messageSegments.add(textSegment);
+
+            // feedItem.body = messageBodyInput;
+
+            // ConnectApi.FeedElement feedElement = ConnectApi.ChatterFeeds.postFeedElement(null,feedItem);
+
+            return 'Success';
+        } catch(Exception e) {
+            System.debug('Error creating poll: ' + e.getMessage());
+            throw new AuraHandledException('Error creating poll: ' + e.getMessage());
         }
     }
 }

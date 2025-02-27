@@ -1,11 +1,16 @@
-import { LightningElement,track } from 'lwc';
+import { LightningElement,track,api } from 'lwc';
 import  { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import createPoll from '@salesforce/apex/CustomChatterUtility.createPoll';
 export default class PollComponent extends LightningElement {
     @track question = '';
+    @track isLoading = false;  
     options = [
         {id:'1',label: 'Option 1',value:''},
         {id:'2',label: 'Option 2',value:''}
     ]
+    connectedCallback(){
+        console.log('recordId: ',this.recordId);
+    }
 
     get isAskDisabled(){
         return !(this.question.trim() && this.options.every(option => option.value && option.value.trim()) );
@@ -44,16 +49,41 @@ export default class PollComponent extends LightningElement {
                 value: option.value
             }));
     }
-    handleAsk(){
-        this.question = '';
-        this.options = this.options
-                .map((option) => ({
-                        ...option,
-                        value: ''
-                }));
-        console.log(JSON.stringify(this.options));
+    handleAsk() {
+        if (this.options.length < 2) {
+            this.showToast('Error', 'error', 'dismissable', 'Please add at least two options');
+            return;
+        }
         
-        this.showToast('Seccussful!','success','dismissable','Poll created successfully');
+        // Set loading state to true
+        this.isLoading = true;
+        
+        // Extract just the values from options array
+        const optionValues = this.options.map(option => option.value);
+        
+        const pollData = {
+            question: this.question,
+            options: optionValues,
+            recordId: this.recordId
+        };
+        
+        createPoll({ input: JSON.stringify(pollData) })
+            .then(result => {
+                this.question = '';
+                this.options = this.options.map(option => ({
+                    ...option,
+                    value: ''
+                }));
+                this.showToast('Successful!', 'success', 'dismissable', 'Poll created successfully');
+            })
+            .catch(error => {
+                console.error('Error creating poll:', error);
+                this.showToast('Error!', 'error', 'dismissable', 'Error occurred while creating poll');
+            })
+            .finally(() => {
+                // Set loading state to false when done
+                this.isLoading = false;
+            });
     }
     showToast(title,variant,mode,message) {
         const event = new ShowToastEvent({

@@ -48,6 +48,7 @@
                 </div>
             </div>
 
+            <!-- body -->
             <div class="slds-text-longform">
                 <lightning-formatted-rich-text value={feed.feedItem.Body}></lightning-formatted-rich-text>
                 <template if:true={feed.feedItem.FeedAttachments}>
@@ -62,6 +63,15 @@
                                 </div>
                             </div>
                         </template>
+                    </div>
+                </template>
+                <template if:true={isPollPost}>
+                    <div class="slds-box">
+                        <lightning-radio-group name="radioGroup"
+                            options={options}
+                            value={value}
+                            type="radio">
+                        </lightning-radio-group>
                     </div>
                 </template>
             </div>

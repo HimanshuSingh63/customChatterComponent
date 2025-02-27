@@ -6,7 +6,7 @@
                     <c-post-component onclose={closeRichText} current-record-id={recordId} type={type} placeholder="Share an update..." show-share-button=true></c-post-component>
                 </lightning-tab>
                 <lightning-tab label="Poll">
-                    <c-poll-component></c-poll-component>
+                    <c-poll-component record-id = {recordId}></c-poll-component>
                 </lightning-tab>
                 <lightning-tab label="Question">
                     <c-question-component></c-question-component>

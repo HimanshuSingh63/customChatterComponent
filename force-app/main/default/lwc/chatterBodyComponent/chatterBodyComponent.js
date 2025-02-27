@@ -28,6 +28,9 @@ export default class ChatterBodyComponent extends LightningElement {
     get textClass() {
         return this.isLiked ? 'slds-p-left_x-small liked-text' : 'slds-p-left_x-small';
     }
+    get isPollPost(){
+        return this.feed.feedItem.Type === 'PollPost' ? true : false;
+    }
 
     @api
     get values(){
@@ -45,6 +48,14 @@ export default class ChatterBodyComponent extends LightningElement {
             JSON.stringify(this.feed));
     }
 
+    get options(){
+        return this.feed.feedItem.Pollchoices.map((option,index)=>({
+            ...option,
+            id: option.Id,
+            label: option.text,
+            value: option.text,
+        }));
+    }
     // Method to process the JSON data
     processData(data) {
         // Process feed item
